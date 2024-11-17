@@ -10,6 +10,12 @@ void set_console(Conosole *c) {
 	console = c;
 }
 
+// Core Functions --------------------------------
+int _time(lua_State *L) {
+	lua_pushnumber(L, GetTime()*1000);
+	return 1;
+}
+
 // Memory Functions --------------------------------
 int peek(lua_State *L) {
 	int addr = lua_tointeger(L, 1);
@@ -63,6 +69,8 @@ int pxget(lua_State *L) {
 }
 
 Func funcs[] = {
+	{"time", _time},
+
 	{"peek", peek},
 	{"peek2", peek2},
 	{"peek4", peek4},

@@ -11,6 +11,9 @@ typedef struct {
 
 void set_console(Conosole *c);
 
+// Core Functions
+int _time(lua_State *L); // _ because time.h
+
 // Memory Functions
 int peek(lua_State *L);
 int peek2(lua_State *L);
