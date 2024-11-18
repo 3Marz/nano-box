@@ -6,7 +6,6 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
-#include <raylib.h>
 
 void console_new(Console *c, char *luafile) {
 	ram_init(&c->ram);
@@ -57,18 +56,16 @@ void console_run_draw(Console *c) {
 }
 
 void console_compose_frame(Console *console) {
-	for(int y = 0; y < SCREEN_HEIGHT; y++) {
-		for(int x = 0; x < SCREEN_WIDTH/2; x++) {
-			uint8_t colors = Peek(&console->ram, x + (y * (SCREEN_WIDTH/2)));
-
-			uint8_t pixelIndex1 = colors >> 4;
-			uint8_t pixelIndex2 = colors & 0xF;
-			
-			Color c1 = color_from_palette(&console->ram, pixelIndex1);
-			Color c2 = color_from_palette(&console->ram, pixelIndex2);
-
-			DrawPixel(x*2 - 1, y, c1);
-			DrawPixel(x*2, y, c2);
+	int y = 0;
+	for(int i = 0; i < 0x3000; i++) {
+		uint8_t colors = Peek(&console->ram, i);
+		TPixel c1 = color_from_palette(&console->ram, colors >> 4);
+		TPixel c2 = color_from_palette(&console->ram, colors & 0xF);
+		int x = i * 2;
+		tigrPlot(console->tscreen, x%SCREEN_WIDTH, y, c1);
+		tigrPlot(console->tscreen, (x%SCREEN_WIDTH)+1, y, c2);
+		if(i%(SCREEN_WIDTH/2) == (SCREEN_WIDTH/2)-1) {
+			y++;
 		}
 	}
 }

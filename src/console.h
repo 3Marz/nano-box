@@ -3,10 +3,13 @@
 
 #include <lua.h>
 #include "ram.h"
+#include "../include/tigr.h"
 
 typedef struct Console {
 	Ram ram;
 	lua_State *L;
+	Tigr *tscreen;
+	double time_elapsed;
 } Console;
 
 void console_new(Console* console, char* luafile);

@@ -2,7 +2,6 @@
 #include "api.h"
 #include "console.h"
 #include "globals.h"
-#include <raylib.h>
 #include <math.h>
 #include <stdint.h>
 

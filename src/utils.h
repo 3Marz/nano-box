@@ -2,8 +2,8 @@
 #define UTILS_H
 
 #include "ram.h"
-#include <raylib.h>
+#include "../include/tigr.h"
 
-Color color_from_palette(Ram *ram, int index);
+TPixel color_from_palette(Ram *ram, int index);
 
 #endif

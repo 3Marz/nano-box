@@ -3,6 +3,9 @@
 #include "console.h"
 #include <lauxlib.h>
 #include <lua.h>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
 
 // IDK about this, but whatever
 Console *console;
@@ -12,7 +15,7 @@ void set_console(Console *c) {
 
 // Core Functions --------------------------------
 int _time(lua_State *L) {
-	lua_pushnumber(L, GetTime()*1000);
+	lua_pushnumber(L, console->time_elapsed);
 	return 1;
 }
 
@@ -54,10 +57,10 @@ int cls(lua_State *L) {
 }
 
 int pxset(lua_State *L) {
-	int x = luaL_checkinteger(L, 1);
-	int y = luaL_checkinteger(L, 2);
+	int x = luaL_checknumber(L, 1);
+	int y = luaL_checknumber(L, 2);
 	int c = luaL_checkinteger(L, 3);
-	PxSet(console, x, y, c);
+	PxSet(console, floor(x), floor(y), c);
 	return 0;
 }
 
