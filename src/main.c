@@ -9,7 +9,7 @@
 int main() {
 
 	Console c;
-	console_new(&c, "lua_examples/pixel.lua");
+	console_new(&c, "lua_examples/text.lua");
 	set_console(&c);
 	register_lua_api(c.L);
 

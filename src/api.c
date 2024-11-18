@@ -2,6 +2,7 @@
 #include "api.h"
 #include "console.h"
 #include "globals.h"
+#include <string.h>
 #include <math.h>
 #include <stdint.h>
 
@@ -59,5 +60,22 @@ void Line(Console *console, int x1, int y1, int x2, int y2, int c) {
 		PxSet(console, x, y, c);
 		x += x_incr;
 		y += y_incr;
+	}
+}
+
+void Text(Console *console, int x, int y, char *s, int c) {
+	int xoff = 0;
+	int char_width = 6;
+	for(int i = 0; i < strlen(s); i++) {
+		int addr = 0x3030+(char_width*(s[i]-32));
+		for(int j = 0; j < char_width; j++) {
+			int hex = Peek(&console->ram, addr+j);
+			for(int k = 0; k < 8; k++) {
+				if(hex & (1 << (7-k))) { // Thanks Codium!
+					PxSet(console, x+k+xoff, y+j, c);
+				}
+			}
+		}
+		xoff += char_width;
 	}
 }

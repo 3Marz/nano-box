@@ -27,6 +27,7 @@ int cls(lua_State *L);
 int pxset(lua_State *L);
 int pxget(lua_State *L);
 int line(lua_State *L);
+int text(lua_State *L);
 
 void register_lua_api(lua_State *L);
 

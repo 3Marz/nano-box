@@ -81,6 +81,15 @@ int line(lua_State *L) {
 	return 0;
 }
 
+int text(lua_State *L) {
+	int x = luaL_checkinteger(L, 1);
+	int y = luaL_checkinteger(L, 2);
+	char *s = luaL_checkstring(L, 3);
+	int c = luaL_checkinteger(L, 4);
+	Text(console, x, y, s, c);
+	return 0;
+}
+
 Func funcs[] = {
 	{"time", _time},
 
@@ -94,6 +103,7 @@ Func funcs[] = {
 	{"pxset", pxset},
 	{"pxget", pxget},
 	{"line", line},
+	{"text", text},
 };
 
 void register_lua_api(lua_State *L) {
