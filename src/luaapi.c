@@ -68,6 +68,16 @@ int pxget(lua_State *L) {
 	return 1;
 }
 
+int line(lua_State *L) {
+	int x1 = luaL_checknumber(L, 1);
+	int y1 = luaL_checknumber(L, 2);
+	int x2 = luaL_checknumber(L, 3);
+	int y2 = luaL_checknumber(L, 4);
+	int c = luaL_checkinteger(L, 5);
+	Line(console, x1, y1, x2, y2, c);
+	return 0;
+}
+
 Func funcs[] = {
 	{"time", _time},
 
@@ -80,6 +90,7 @@ Func funcs[] = {
 	{"cls", cls},
 	{"pxset", pxset},
 	{"pxget", pxget},
+	{"line", line},
 };
 
 void register_lua_api(lua_State *L) {

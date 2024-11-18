@@ -3,6 +3,7 @@
 #include "console.h"
 #include "globals.h"
 #include <raylib.h>
+#include <math.h>
 #include <stdint.h>
 
 void Cls(Console *console, int c) {
@@ -39,3 +40,25 @@ int PxGet(Console *console, int x, int y) {
 	}
 }
 
+void Line(Console *console, int x1, int y1, int x2, int y2, int c) {
+	float dx = x2 - x1;
+	float dy = y2 - y1;
+	float step = 0;
+
+	if (fabs(dx) > fabs(dy)) {
+		step = fabs(dx);
+	} else {
+		step = fabs(dy);
+	}
+
+	float x_incr = dx / step;
+	float y_incr = dy / step;
+
+	float x = x1;
+	float y = y1;
+	for(int i = 0; i < floor(step); i++) {
+		PxSet(console, x, y, c);
+		x += x_incr;
+		y += y_incr;
+	}
+}
