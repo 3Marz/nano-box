@@ -8,7 +8,7 @@
 
 int main() {
 
-	Conosole c;
+	Console c;
 	console_new(&c, "lua_examples/hello.lua");
 	set_console(&c);
 	register_lua_api(c.L);

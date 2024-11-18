@@ -9,7 +9,7 @@ typedef struct {
 	int (*func)(lua_State *L);
 } Func;
 
-void set_console(Conosole *c);
+void set_console(Console *c);
 
 // Core Functions
 int _time(lua_State *L); // _ because time.h

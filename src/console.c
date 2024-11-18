@@ -8,7 +8,7 @@
 #include <lualib.h>
 #include <raylib.h>
 
-void console_new(Conosole *c, char *luafile) {
+void console_new(Console *c, char *luafile) {
 	ram_init(&c->ram);
 	c->L = luaL_newstate();
 	if (c->L == NULL) {
@@ -32,7 +32,7 @@ void console_new(Conosole *c, char *luafile) {
 	}
 }
 
-void console_run_boot(Conosole *c) {
+void console_run_boot(Console *c) {
 	lua_getglobal(c->L, "_boot");
 	if(lua_pcall(c->L, 0, 0, 0) != 0) {
 		fprintf(stderr, "Lua: %s\n", lua_tostring(c->L, -1));
@@ -40,7 +40,7 @@ void console_run_boot(Conosole *c) {
 	}
 }
 
-void console_run_update(Conosole *c) {
+void console_run_update(Console *c) {
 	lua_getglobal(c->L, "_update");
 	if(lua_pcall(c->L, 0, 0, 0) != 0) {
 		fprintf(stderr, "Lua: %s\n", lua_tostring(c->L, -1));
@@ -48,7 +48,7 @@ void console_run_update(Conosole *c) {
 	}
 }
 
-void console_run_draw(Conosole *c) {
+void console_run_draw(Console *c) {
 	lua_getglobal(c->L, "_draw");
 	if(lua_pcall(c->L, 0, 0, 0) != 0) {
 		fprintf(stderr, "Lua: %s\n", lua_tostring(c->L, -1));
@@ -56,7 +56,7 @@ void console_run_draw(Conosole *c) {
 	}
 }
 
-void console_compose_frame(Conosole *console) {
+void console_compose_frame(Console *console) {
 	for(int y = 0; y < SCREEN_HEIGHT; y++) {
 		for(int x = 0; x < SCREEN_WIDTH/2; x++) {
 			uint8_t colors = Peek(&console->ram, x + (y * (SCREEN_WIDTH/2)));
@@ -73,7 +73,7 @@ void console_compose_frame(Conosole *console) {
 	}
 }
 
-void console_close(Conosole *console) {
+void console_close(Console *console) {
 	lua_close(console->L);
 }
 

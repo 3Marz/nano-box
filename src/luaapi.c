@@ -5,8 +5,8 @@
 #include <lua.h>
 
 // IDK about this, but whatever
-Conosole *console;
-void set_console(Conosole *c) {
+Console *console;
+void set_console(Console *c) {
 	console = c;
 }
 

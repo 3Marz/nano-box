@@ -4,19 +4,19 @@
 #include <lua.h>
 #include "ram.h"
 
-typedef struct Conosole {
+typedef struct Console {
 	Ram ram;
 	lua_State *L;
-} Conosole;
+} Console;
 
-void console_new(Conosole* console, char* luafile);
+void console_new(Console* console, char* luafile);
 
-void console_run_boot(Conosole* console);
-void console_run_update(Conosole* console);
-void console_run_draw(Conosole* console);
+void console_run_boot(Console* console);
+void console_run_update(Console* console);
+void console_run_draw(Console* console);
 
-void console_compose_frame(Conosole* console);
+void console_compose_frame(Console* console);
 
-void console_close(Conosole *console);
+void console_close(Console *console);
 
 #endif

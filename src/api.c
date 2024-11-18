@@ -5,13 +5,13 @@
 #include <raylib.h>
 #include <stdint.h>
 
-void Cls(Conosole *console, int c) {
+void Cls(Console *console, int c) {
 	for(int i = 0; i < (SCREEN_WIDTH*SCREEN_HEIGHT)/2; i++) {
 		Poke(&console->ram, i, (c | (c << 4)));
 	}
 }
 
-void PxSet(Conosole *console, int x, int y, int c) {
+void PxSet(Console *console, int x, int y, int c) {
 	if(x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) {
 		return;
 	}
@@ -25,7 +25,7 @@ void PxSet(Conosole *console, int x, int y, int c) {
 	}
 }
 
-int PxGet(Conosole *console, int x, int y) {
+int PxGet(Console *console, int x, int y) {
 	if(x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) {
 		return 0;
 	}
