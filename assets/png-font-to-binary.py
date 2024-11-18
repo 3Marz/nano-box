@@ -32,9 +32,9 @@ def region_to_binary(region: Image.Image, char_index) -> str:
         return ""
 
     charString = ""
-    for y in range(cell_w):
+    for y in range(cell_h):
         binary = ""
-        for x in range(cell_h):
+        for x in range(cell_w):
             if region.getpixel((x, y)) == (0, 0, 0, 255):
                 binary += "1"
             else:
