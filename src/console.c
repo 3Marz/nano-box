@@ -1,5 +1,6 @@
 
 #include "console.h"
+#include "luaapi.h"
 #include "globals.h"
 #include "ram.h"
 #include "utils.h"
@@ -22,9 +23,10 @@ void console_new(Console *c, char *luafile) {
 		return;
 	}
 	// Register Api
-	/*register_lua_api(c->L);*/
+	register_lua_api(c->L);
+}
 
-	// Run Global Scope
+void console_run_global(Console *c) {
 	if(lua_pcall(c->L, 0, LUA_MULTRET, 0) != 0) {
 		fprintf(stderr, "Lua: %s\n", lua_tostring(c->L, -1));
 		return;

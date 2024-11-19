@@ -13,6 +13,7 @@ typedef struct Console {
 } Console;
 
 void console_new(Console* console, char* luafile);
+void console_run_global(Console *c);
 
 void console_run_boot(Console* console);
 void console_run_update(Console* console);
