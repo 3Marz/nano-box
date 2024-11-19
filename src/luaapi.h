@@ -28,6 +28,10 @@ int pxset(lua_State *L);
 int pxget(lua_State *L);
 int line(lua_State *L);
 int text(lua_State *L);
+int rect(lua_State *L);
+int rectf(lua_State *L);
+int circ(lua_State *L);
+int circf(lua_State *L);
 
 void register_lua_api(lua_State *L);
 

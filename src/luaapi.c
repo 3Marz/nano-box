@@ -90,6 +90,43 @@ int text(lua_State *L) {
 	return 0;
 }
 
+int rect(lua_State *L) {
+	int x = luaL_checknumber(L, 1);
+	int y = luaL_checknumber(L, 2);
+	int w = luaL_checknumber(L, 3);
+	int h = luaL_checknumber(L, 4);
+	int c = luaL_checkinteger(L, 5);
+	Rect(console, x, y, w, h, c);
+	return 0;
+}
+
+int rectf(lua_State *L) {
+	int x = luaL_checknumber(L, 1);
+	int y = luaL_checknumber(L, 2);
+	int w = luaL_checknumber(L, 3);
+	int h = luaL_checknumber(L, 4);
+	int c = luaL_checkinteger(L, 5);
+	RectF(console, x, y, w, h, c);
+	return 0;
+}
+
+int circ(lua_State *L) {
+	int x = luaL_checknumber(L, 1);
+	int y = luaL_checknumber(L, 2);
+	int r = luaL_checknumber(L, 3);
+	int c = luaL_checkinteger(L, 4);
+	Circ(console, x, y, r, c);
+	return 0;
+}
+int circf(lua_State *L) {
+	int x = luaL_checknumber(L, 1);
+	int y = luaL_checknumber(L, 2);
+	int r = luaL_checknumber(L, 3);
+	int c = luaL_checkinteger(L, 4);
+	CircF(console, x, y, r, c);
+	return 0;
+}
+
 Func funcs[] = {
 	{"time", _time},
 
@@ -104,6 +141,10 @@ Func funcs[] = {
 	{"pxget", pxget},
 	{"line", line},
 	{"text", text},
+	{"rect", rect},
+	{"rectf", rectf},
+	{"circ", circ},
+	{"circf", circf},
 };
 
 void register_lua_api(lua_State *L) {

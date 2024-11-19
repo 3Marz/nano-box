@@ -63,6 +63,64 @@ void Line(Console *console, int x1, int y1, int x2, int y2, int c) {
 	}
 }
 
+void Rect(Console *console, int x, int y, int w, int h, int c) {
+	Line(console, x, y, x+w-1, y, c);
+	Line(console, x, y+h-1, x+w-1, y+h, c);
+	Line(console, x, y, x, y+h-1, c);
+	Line(console, x+w-1, y, x+w, y+h, c);
+}
+void RectF(Console *console, int x, int y, int w, int h, int c) {
+	for(int xi = x; xi < x+w; xi++) {
+		for(int yi = y; yi < y+h; yi++) {
+			PxSet(console, xi, yi, c);
+		}
+	}
+}
+
+void CircF(Console *console, int x, int y, int r, int c) {
+	for(int xi = 0; xi <= r*2; xi++) {
+		for(int yi = 0; yi <= r*2; yi++) {
+			float dx = r-xi;
+			float dy = r-yi;
+
+			float dist = sqrtf((dx*dx) + (dy*dy));
+
+			if (dist-r > 1) {
+				continue;
+			}
+
+			if (r/dist < 0.98) {
+				continue;
+			}
+			
+			PxSet(console, (xi+x)-(r), (yi+y)-(r), c);
+		}
+	}
+}
+void Circ(Console *console, int x, int y, int r, int c) {
+	int ax = r;
+	int ay = 0;
+	int b = 1-ax;
+	while(ay <= ax) {
+		PxSet(console, x+ax, y+ay, c);
+		PxSet(console, x-ax, y+ay, c);
+		PxSet(console, x+ax, y-ay, c);
+		PxSet(console, x-ax, y-ay, c);
+		PxSet(console, x+ay, y+ax, c);
+		PxSet(console, x-ay, y+ax, c);
+		PxSet(console, x+ay, y-ax, c);
+		PxSet(console, x-ay, y-ax, c);
+		
+		ay++;
+		if(b < 0) {
+			b += 2*ay + 1;
+		} else {
+			ax--;
+			b += 2*(ay-ax) + 1;
+		}
+	}
+}
+
 void Text(Console *console, int x, int y, char *s, int c) {
 	int xoff = 0;
 	int yoff = y;
