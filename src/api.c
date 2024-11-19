@@ -148,3 +148,14 @@ void Text(Console *console, int x, int y, char *s, int c) {
 		xoff += char_width;
 	}
 }
+
+void Spr(Console *console, int id, int x, int y, int w, int h) {
+	int id_addr = 0x326A+(id*32);
+	for(int j = 0; j < h*8; j++) {
+		for (int i = 0; i < w*4; i++) {
+			int colors = Peek(&console->ram, id_addr+i+(j*4));
+			PxSet(console, x+(i*2), y+j, colors>>4);
+			PxSet(console, x+(i*2)+1, y+j, colors&0xf);
+		}
+	}
+}

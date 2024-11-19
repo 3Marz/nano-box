@@ -127,6 +127,16 @@ int circf(lua_State *L) {
 	return 0;
 }
 
+int spr(lua_State *L) {
+	int id = luaL_checkinteger(L, 1);
+	int x = luaL_checknumber(L, 2);
+	int y = luaL_checknumber(L, 3);
+	int w = luaL_checkinteger(L, 4);
+	int h = luaL_checkinteger(L, 5);
+	Spr(console, id, x, y, w, h);
+	return 0;
+}
+
 Func funcs[] = {
 	{"time", _time},
 
@@ -145,6 +155,7 @@ Func funcs[] = {
 	{"rectf", rectf},
 	{"circ", circ},
 	{"circf", circf},
+	{"spr", spr},
 };
 
 void register_lua_api(lua_State *L) {
