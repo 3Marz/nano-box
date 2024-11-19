@@ -9,9 +9,10 @@
 int main() {
 
 	Console c;
-	console_new(&c, "lua_examples/text.lua");
-	set_console(&c);
-	register_lua_api(c.L);
+	console_new(&c, "lua_examples/hello.lua");
+	luaapi_set_console(&c);
+
+	console_run_global(&c);
 
 	console_run_boot(&c);
 

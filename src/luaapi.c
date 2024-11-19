@@ -9,7 +9,7 @@
 
 // IDK about this, but whatever
 Console *console;
-void set_console(Console *c) {
+void luaapi_set_console(Console *c) {
 	console = c;
 }
 
