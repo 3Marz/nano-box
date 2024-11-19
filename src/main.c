@@ -25,6 +25,9 @@ int main() {
 		console_run_update(&c);
 		console_compose_frame(&c);
 		tigrUpdate(screen);
+		if(tigrKeyDown(c.tscreen, TK_ESCAPE)) {
+			break;	
+		}
 		c.time_elapsed = ((clock() - t)/(float)CLOCKS_PER_SEC);
 	}
 	tigrFree(screen);
