@@ -15,5 +15,7 @@ void CircF(Console *console, int x, int y, int r, int c);
 void Spr(Console *console, int id, int x, int y, int w, int h);
 void GetKeys(Console *console);
 void Mouse(Console *console);
+void BtnP(Console *console);
+void Btn(Console *console);
 
 #endif

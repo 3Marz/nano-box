@@ -2,6 +2,7 @@
 #include "api.h"
 #include "console.h"
 #include "globals.h"
+#include "ram.h"
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
@@ -170,5 +171,44 @@ void Mouse(Console *console) {
 
 void GetKeys(Console *console) {
 	Poke(&console->ram, 0x526D, tigrReadChar(console->tscreen));
+}
+
+void Btn(Console *console) {
+	int binArray[8] = {0,0,0,0,0,0,0,0};
+	int hex = Peek(&console->ram, 0x526F);
+	for(int i = 0; i < 8; i++) {
+		if(hex & (1 << (7-i))) {
+			binArray[i] = 1;
+		}
+	}
+	if(tigrKeyHeld(console->tscreen, TK_UP))    { binArray[0] = 1; } else { binArray[0] = 0; }
+	if(tigrKeyHeld(console->tscreen, TK_DOWN))  { binArray[1] = 1; } else { binArray[1] = 0; }
+	if(tigrKeyHeld(console->tscreen, TK_RIGHT)) { binArray[2] = 1; } else { binArray[2] = 0; }
+	if(tigrKeyHeld(console->tscreen, TK_LEFT))  { binArray[3] = 1; } else { binArray[3] = 0; }
+	if(tigrKeyHeld(console->tscreen, 'Z'))      { binArray[4] = 1; } else { binArray[4] = 0; }
+	if(tigrKeyHeld(console->tscreen, 'X'))      { binArray[5] = 1; } else { binArray[5] = 0; }
+	int bin = 0;
+	int mult = 1;
+	for(int i = 7; i >= 0; i--) {
+		bin += binArray[i]*mult;
+		mult *= 2;
+	}
+	Poke(&console->ram, 0x526F, bin);
+}
+void BtnP(Console *console) {
+	int binArray[8] = {0,0,0,0,0,0,0,0};
+	if(tigrKeyDown(console->tscreen, TK_UP))    { binArray[0] = 1; }
+	if(tigrKeyDown(console->tscreen, TK_DOWN))  { binArray[1] = 1; }
+	if(tigrKeyDown(console->tscreen, TK_RIGHT)) { binArray[2] = 1; }
+	if(tigrKeyDown(console->tscreen, TK_LEFT))  { binArray[3] = 1; }
+	if(tigrKeyDown(console->tscreen, 'Z'))      { binArray[4] = 1; }
+	if(tigrKeyDown(console->tscreen, 'X'))      { binArray[5] = 1; }
+	int bin = 0;
+	int mult = 1;
+	for(int i = 7; i >= 0; i--) {
+		bin += binArray[i]*mult;
+		mult *= 2;
+	}
+	Poke(&console->ram, 0x526E, bin);
 }
 

@@ -31,6 +31,30 @@ int mouse(lua_State *L) { // Cheating TODO
 	lua_pushinteger(L, Peek(&console->ram, 0x526C));
 	return 3;
 }
+int btn(lua_State *L) {
+	Btn(console);
+	int b = luaL_checkinteger(L, 1);
+	int byte = Peek(&console->ram, 0x526F);
+	int bit = byte >> (7-b) & 0b1;
+	if(bit == 1) {
+		lua_pushboolean(L, 1);
+	} else {
+		lua_pushboolean(L, 0);
+	}
+	return 1;
+}
+int btnp(lua_State *L) {
+	BtnP(console);
+	int b = luaL_checkinteger(L, 1);
+	int byte = Peek(&console->ram, 0x526E);
+	int bit = byte >> (7-b) & 0b1;
+	if(bit == 1) {
+		lua_pushboolean(L, 1);
+	} else {
+		lua_pushboolean(L, 0);
+	}
+	return 1;
+}
 
 // Memory Functions --------------------------------
 int peek(lua_State *L) {
@@ -154,6 +178,8 @@ Func funcs[] = {
 	{"time", _time},
 	{"getkeys", getkeys},
 	{"mouse", mouse},
+	{"btnp", btnp},
+	{"btn", btn},
 
 	{"peek", peek},
 	{"peek2", peek2},
