@@ -13,5 +13,7 @@ void RectF(Console *console, int x, int y, int w, int h, int c);
 void Circ(Console *console, int x, int y, int r, int c);
 void CircF(Console *console, int x, int y, int r, int c);
 void Spr(Console *console, int id, int x, int y, int w, int h);
+void GetKeys(Console *console);
+void Mouse(Console *console);
 
 #endif

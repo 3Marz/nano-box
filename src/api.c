@@ -159,3 +159,16 @@ void Spr(Console *console, int id, int x, int y, int w, int h) {
 		}
 	}
 }
+
+void Mouse(Console *console) {
+	int x, y, btn;
+	tigrMouse(console->tscreen, &x, &y, &btn);
+	Poke(&console->ram, 0x526A, x);
+	Poke(&console->ram, 0x526B, y);
+	Poke(&console->ram, 0x526C, btn);
+}
+
+void GetKeys(Console *console) {
+	Poke(&console->ram, 0x526D, tigrReadChar(console->tscreen));
+}
+

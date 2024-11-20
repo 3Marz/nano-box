@@ -1,6 +1,7 @@
 #include "luaapi.h"
 #include "api.h"
 #include "console.h"
+#include "ram.h"
 #include <lauxlib.h>
 #include <lua.h>
 #include <math.h>
@@ -18,16 +19,16 @@ int _time(lua_State *L) {
 	lua_pushnumber(L, console->time_elapsed);
 	return 1;
 }
-int getkeys(lua_State *L) {
-	lua_pushinteger(L, tigrReadChar(console->tscreen));
+int getkeys(lua_State *L) { // Cheating TODO
+	GetKeys(console);
+	lua_pushinteger(L, Peek(&console->ram, 0x526D));
 	return 1;
 }
-int mouse(lua_State *L) {
-	int x, y, btn;
-	tigrMouse(console->tscreen, &x, &y, &btn);
-	lua_pushinteger(L, x);
-	lua_pushinteger(L, y);
-	lua_pushinteger(L, btn);
+int mouse(lua_State *L) { // Cheating TODO
+	Mouse(console);
+	lua_pushinteger(L, Peek(&console->ram, 0x526A));
+	lua_pushinteger(L, Peek(&console->ram, 0x526B));
+	lua_pushinteger(L, Peek(&console->ram, 0x526C));
 	return 3;
 }
 
