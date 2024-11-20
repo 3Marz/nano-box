@@ -9,7 +9,7 @@
 int main() {
 
 	Console c;
-	console_new(&c, "lua_examples/hello.lua");
+	console_new(&c, "editor.lua");
 	luaapi_set_console(&c);
 
 	console_run_global(&c);
