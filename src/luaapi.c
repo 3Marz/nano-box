@@ -18,6 +18,10 @@ int _time(lua_State *L) {
 	lua_pushnumber(L, console->time_elapsed);
 	return 1;
 }
+int getkeys(lua_State *L) {
+	lua_pushinteger(L, tigrReadChar(console->tscreen));
+	return 1;
+}
 
 // Memory Functions --------------------------------
 int peek(lua_State *L) {
@@ -139,6 +143,7 @@ int spr(lua_State *L) {
 
 Func funcs[] = {
 	{"time", _time},
+	{"getkeys", getkeys},
 
 	{"peek", peek},
 	{"peek2", peek2},
