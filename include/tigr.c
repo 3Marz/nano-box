@@ -2723,6 +2723,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #endif
 
 #endif // #ifndef TIGR_HEADLESS
+
 //////// End of inlined file: tigr_win.c ////////
 
 //////// Start of inlined file: tigr_osx.c ////////
@@ -4927,17 +4928,19 @@ static void tigrProcessInput(TigrInternal* win, int winWidth, int winHeight) {
 
     static char prevKeys[32];
     char keys[32];
+	int repetCount = 0;
     XQueryKeymap(win->dpy, keys);
     for (int i = 0; i < 32; i++) {
+		/*printf("key %d |", keys[i]);*/
         char thisBlock = keys[i];
         char prevBlock = prevKeys[i];
-        if (thisBlock != prevBlock) {
+        /*if (thisBlock != prevBlock) {*/
             for (int j = 0; j < 8; j++) {
                 int thisBit = thisBlock & 1;
                 int prevBit = prevBlock & 1;
                 thisBlock >>= 1;
                 prevBlock >>= 1;
-                if (thisBit != prevBit) {
+                /*if (thisBit != prevBit) {*/
                     int keyCode = 8 * i + j;
                     KeySym keySym = XkbKeycodeToKeysym(win->dpy, keyCode, 0, 0);
                     if (keySym != NoSymbol) {
@@ -4947,11 +4950,11 @@ static void tigrProcessInput(TigrInternal* win, int winWidth, int winHeight) {
 
                         if (thisBit) {
                             tigrInterpretChar(win, root, keyCode, mask);
-                        }
+                        } 
                     }
-                }
-            }
-        }
+                /*} */
+			}
+        /*}*/
     }
     memcpy(prevKeys, keys, 32);
 
