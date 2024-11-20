@@ -34,6 +34,7 @@ int circ(lua_State *L);
 int circf(lua_State *L);
 int spr(lua_State *L);
 int getkeys(lua_State *L);
+int mouse(lua_State *L);
 
 void register_lua_api(lua_State *L);
 

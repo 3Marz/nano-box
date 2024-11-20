@@ -22,6 +22,14 @@ int getkeys(lua_State *L) {
 	lua_pushinteger(L, tigrReadChar(console->tscreen));
 	return 1;
 }
+int mouse(lua_State *L) {
+	int x, y, btn;
+	tigrMouse(console->tscreen, &x, &y, &btn);
+	lua_pushinteger(L, x);
+	lua_pushinteger(L, y);
+	lua_pushinteger(L, btn);
+	return 3;
+}
 
 // Memory Functions --------------------------------
 int peek(lua_State *L) {
@@ -144,6 +152,7 @@ int spr(lua_State *L) {
 Func funcs[] = {
 	{"time", _time},
 	{"getkeys", getkeys},
+	{"mouse", mouse},
 
 	{"peek", peek},
 	{"peek2", peek2},
