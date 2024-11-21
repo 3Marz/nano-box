@@ -3,6 +3,7 @@
 #include "console.h"
 #include "globals.h"
 #include "ram.h"
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
@@ -127,6 +128,7 @@ void Text(Console *console, int x, int y, char *s, int c) {
 	int yoff = y;
 	int char_height = 6;
 	int char_width = 5;
+	int color = c;
 	for(int i = 0; i < strlen(s); i++) {
 
 		// TODO support more escape sequences.
@@ -135,6 +137,22 @@ void Text(Console *console, int x, int y, char *s, int c) {
 			yoff += char_height;
 			i++;
 		}
+		if(s[i] == '\x01')  { color = 0; i++; }
+		if(s[i] == '\x02')  { color = 1; i++; }
+		if(s[i] == '\x03')  { color = 2; i++; }
+		if(s[i] == '\x04')  { color = 3; i++; }
+		if(s[i] == '\x05')  { color = 4; i++; }
+		if(s[i] == '\x06')  { color = 5; i++; }
+		if(s[i] == '\x07')  { color = 6; i++; }
+		if(s[i] == '\x08')  { color = 7; i++; }
+		if(s[i] == '\x09')  { color = 8; i++; }
+		if(s[i] == '\x00')  { color = 9; i++; }
+		if(s[i] == '\x11') { color = 10; i++; }
+		if(s[i] == '\x12') { color = 11; i++; }
+		if(s[i] == '\x13') { color = 12; i++; }
+		if(s[i] == '\x14') { color = 13; i++; }
+		if(s[i] == '\x15') { color = 14; i++; }
+		if(s[i] == '\x16') { color = 15; i++; }
 
 		int addr = 0x3030+(char_height*(s[i]-32));
 
@@ -142,7 +160,7 @@ void Text(Console *console, int x, int y, char *s, int c) {
 			int hex = Peek(&console->ram, addr+j);
 			for(int k = 0; k < 8; k++) {
 				if(hex & (1 << (7-k))) { // Thanks Codium!
-					PxSet(console, x+k+xoff, yoff+j, c);
+					PxSet(console, x+k+xoff, yoff+j, color);
 				}
 			}
 		}
