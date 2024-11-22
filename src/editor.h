@@ -4,6 +4,7 @@
 
 #include "console.h"
 #include <stdbool.h>
+#include "../include/sds.h"
 
 enum EditorMode {
 	EDITOR_MODE_TERM,
@@ -25,7 +26,7 @@ typedef struct Editor {
 		int yoff;
 		int col;
 		int row;
-		char** data;
+		sds* data;
 	} code;
 
 	struct {

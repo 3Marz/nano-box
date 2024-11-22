@@ -2,6 +2,7 @@
 #include "editor.h"
 #include "api.h"
 #include "ram.h"
+#include "utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,7 @@ Editor* editor_new(Console *c) {
 	e->code.yoff = 9;
 	e->code.col = 0;
 	e->code.row = 0;
-	e->code.data = (char**)malloc(sizeof(char*));
+	e->code.data = (sds *)malloc(sizeof(sds));
 	if (e->code.data == NULL) {
 		fprintf(stderr, "Editor: Could not create code editor\n");
 		return NULL;
@@ -26,7 +27,7 @@ Editor* editor_new(Console *c) {
 	/*	return NULL;*/
 	/*}*/
 	/*e->code.data[0] = NULL;*/
-	e->code.data[0] = strdup("");
+	e->code.data[0] = sdsnew("");
 	printf("%s\n", e->code.data[0]);
 
 	e->keyboard.initialDelay = 20;
@@ -76,18 +77,19 @@ void handle_editor_on_input(Editor *e, char c) {
 		printf("Enter\n");	
 	}
 	else { // Normal character
-		size_t newLen = strlen(e->code.data[e->code.row]) + 2;
-
-		char *tmp =	(char *)realloc(e->code.data[e->code.row], newLen);
-		if (tmp == NULL) {
-			free(tmp);
-			fprintf(stderr, "Editor: Could not resize line\n");
-			return;
-		}
-		e->code.data[e->code.row] = tmp;
-
-		e->code.data[e->code.row][newLen-2] = c;
-		e->code.data[e->code.row][newLen-1] = '\0';
+		/*size_t newLen = strlen(e->code.data[e->code.row]) + 2;*/
+		/**/
+		/*char *tmp =	(char *)realloc(e->code.data[e->code.row], newLen);*/
+		/*if (tmp == NULL) {*/
+		/*	free(tmp);*/
+		/*	fprintf(stderr, "Editor: Could not resize line\n");*/
+		/*	return;*/
+		/*}*/
+		/*e->code.data[e->code.row] = tmp;*/
+		/**/
+		/*e->code.data[e->code.row][newLen-2] = c;*/
+		/*e->code.data[e->code.row][newLen-1] = '\0';*/
+		e->code.data[e->code.row] = sdsinschar(e->code.data[e->code.row], e->code.col-1, c);
 
 		e->code.col++;
 	}
@@ -163,7 +165,7 @@ void editor_close(Editor *e) {
 	int linesLen = sizeof(e->code.data)/sizeof(char*);
 	printf("Closing editor with %d lines\n", linesLen);
 	for (int i = 0; i < linesLen; i++) {
-		free(e->code.data[i]);
+		sdsfree(e->code.data[i]);
 	}
 	free(e->code.data);
 	free(e);

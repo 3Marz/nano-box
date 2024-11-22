@@ -3,7 +3,9 @@
 
 #include "ram.h"
 #include "../include/tigr.h"
+#include "../include/sds.h"
 
 TPixel color_from_palette(Ram *ram, int index);
+sds sdsinschar(sds str, int i, char ch);
 
 #endif

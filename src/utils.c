@@ -9,3 +9,17 @@ TPixel color_from_palette(Ram *ram, int index) {
 		255};
 }
 
+sds sdsinschar(sds str, int i, char ch) {
+	sds temp = sdsdup(str);
+	sdsrange(str, 0, i);
+
+	char s[2] = "\0";
+	s[0] = ch;
+	str = sdscat(str, s);
+
+	sdsrange(temp, i+1, -1);
+	str = sdscatsds(str, temp);
+	sdsfree(temp);
+
+	return str;
+}
