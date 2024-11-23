@@ -11,7 +11,11 @@ TPixel color_from_palette(Ram *ram, int index) {
 
 sds sdsinschar(sds str, int i, char ch) {
 	sds temp = sdsdup(str);
-	sdsrange(str, 0, i);
+	if (i != -1) {
+		sdsrange(str, 0, i);
+	} else {
+		str = sdsnew("");
+	}
 
 	char s[2] = "\0";
 	s[0] = ch;
