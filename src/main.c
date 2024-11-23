@@ -2,7 +2,7 @@
 #include "../include/tigr.h"
 #include <time.h>
 #include "console.h"
-#include "editor.h"
+#include "editor/editor.h"
 #include "globals.h"
 #include "luaapi.h"
 
