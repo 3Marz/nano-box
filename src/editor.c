@@ -16,19 +16,13 @@ Editor* editor_new(Console *c) {
 	e->code.yoff = 9;
 	e->code.col = 0;
 	e->code.row = 0;
-	e->code.data = (sds *)malloc(sizeof(sds));
+	e->code.len = 1;
+	e->code.data = (sds *)malloc(e->code.len*sizeof(sds));
 	if (e->code.data == NULL) {
 		fprintf(stderr, "Editor: Could not create code editor\n");
 		return NULL;
 	}
-	/*e->code.data[0] = (char *)malloc(2*sizeof(char));*/
-	/*if (e->code.data[0] == NULL) {*/
-	/*	fprintf(stderr, "Editor: Could not create line\n");*/
-	/*	return NULL;*/
-	/*}*/
-	/*e->code.data[0] = NULL;*/
 	e->code.data[0] = sdsnew("");
-	printf("%s\n", e->code.data[0]);
 
 	e->keyboard.initialDelay = 20;
 	e->keyboard.repeatDelay = 2;
@@ -63,34 +57,52 @@ bool arrow_keys(Editor *e, int key) {
 }
 
 void draw_code(Editor *e) {
-	int len = sizeof(e->code.data)/sizeof(char*);
-	for (int i = 0; i < len; i++) {
+	for (int i = 0; i < e->code.len; i++) {
 		Text(e->console, 0, (i*6)+e->code.yoff, e->code.data[i], 2);
 	}
+}
+
+void insert_new_line(Editor *e) {
+	e->code.len++;
+	e->code.data = (sds *)realloc(e->code.data, e->code.len*sizeof(sds));
+	if (e->code.data == NULL) {
+		fprintf(stderr, "Could not realloc arr\n");
+		exit(1);
+	}
+	e->code.row++;
+	if (e->code.col < sdslen(e->code.data[e->code.row-1])) {
+		printf("Split\n");
+		sds tmp = sdsdup(e->code.data[e->code.row-1]);
+
+		if (e->code.col != 0) {
+			sdsrange(e->code.data[e->code.row-1], 0, e->code.col-1);
+		} else {
+			e->code.data[e->code.row-1] = sdsnew("");
+		}
+		sdsrange(tmp, e->code.col, -1);
+		for (int i = e->code.len-1; i > e->code.row; i--) {
+			e->code.data[i] = e->code.data[i-1];
+		}
+		e->code.data[e->code.row] = tmp;
+	} else {
+		for (int i = e->code.len-1; i > e->code.row; i--) {
+			e->code.data[i] = e->code.data[i-1];
+		}
+		e->code.data[e->code.row] = sdsdup("");
+	}
+	e->code.col = 0;
+
 }
 
 void handle_editor_on_input(Editor *e, char c) {
 	if (c == '\b') { // Backspace
 		printf("Backspace\n");	
 	}
-	else if (c == 13) { // Enter
-		printf("Enter\n");	
+	else if (c == 13) {	
+		insert_new_line(e);
 	}
 	else { // Normal character
-		/*size_t newLen = strlen(e->code.data[e->code.row]) + 2;*/
-		/**/
-		/*char *tmp =	(char *)realloc(e->code.data[e->code.row], newLen);*/
-		/*if (tmp == NULL) {*/
-		/*	free(tmp);*/
-		/*	fprintf(stderr, "Editor: Could not resize line\n");*/
-		/*	return;*/
-		/*}*/
-		/*e->code.data[e->code.row] = tmp;*/
-		/**/
-		/*e->code.data[e->code.row][newLen-2] = c;*/
-		/*e->code.data[e->code.row][newLen-1] = '\0';*/
 		e->code.data[e->code.row] = sdsinschar(e->code.data[e->code.row], e->code.col-1, c);
-
 		e->code.col++;
 	}
 }
@@ -120,21 +132,21 @@ void handle_keyboad_input(Editor *e) {
 void handle_arrow_input(Editor *e) {
 	if (arrow_keys(e, 0) && e->code.row > 0) {
 		e->code.row--;
-		if (e->code.col > strlen(e->code.data[e->code.row])) {
-			e->code.col = strlen(e->code.data[e->code.row]);
+		if (e->code.col > sdslen(e->code.data[e->code.row])) {
+			e->code.col = sdslen(e->code.data[e->code.row]);
 		}
 	}
-	if (arrow_keys(e, 1) && e->code.row < (sizeof(e->code.data)/sizeof(char*)-1)) {
+	if (arrow_keys(e, 1) && e->code.row < e->code.len-1) {
 		e->code.row++;
-		if (e->code.col > strlen(e->code.data[e->code.row])) {
-			e->code.col = strlen(e->code.data[e->code.row]);
+		if (e->code.col > sdslen(e->code.data[e->code.row])) {
+			e->code.col = sdslen(e->code.data[e->code.row]);
 		}
 	}
 	if (arrow_keys(e, 2)) {
-		if (e->code.col < strlen(e->code.data[e->code.row])) {
+		if (e->code.col < sdslen(e->code.data[e->code.row])) {
 			e->code.col++;
 		}
-		else if (e->code.col == strlen(e->code.data[e->code.row]) && e->code.row < (sizeof(e->code.data)/sizeof(char*)-1)) {
+		else if (e->code.col == sdslen(e->code.data[e->code.row]) && e->code.row < e->code.len-1) {
 			e->code.col = 0;
 			e->code.row++;
 		}
@@ -144,8 +156,8 @@ void handle_arrow_input(Editor *e) {
 			e->code.col--;
 		}
 		else if (e->code.col == 0 && e->code.row > 0) {
-			e->code.col = strlen(e->code.data[e->code.row]);
 			e->code.row--;
+			e->code.col = sdslen(e->code.data[e->code.row]);
 		}
 	}
 }
@@ -162,9 +174,8 @@ void editor_run(Editor *e) {
 }
 
 void editor_close(Editor *e) {
-	int linesLen = sizeof(e->code.data)/sizeof(char*);
-	printf("Closing editor with %d lines\n", linesLen);
-	for (int i = 0; i < linesLen; i++) {
+	printf("Closing editor with acc %d lines\n", e->code.len);
+	for (int i = 0; i < e->code.len; i++) {
 		sdsfree(e->code.data[i]);
 	}
 	free(e->code.data);

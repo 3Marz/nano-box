@@ -26,6 +26,7 @@ typedef struct Editor {
 		int yoff;
 		int col;
 		int row;
+		int len;
 		sds* data;
 	} code;
 
