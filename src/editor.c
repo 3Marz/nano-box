@@ -71,7 +71,6 @@ void insert_new_line(Editor *e) {
 	}
 	e->code.row++;
 	if (e->code.col < sdslen(e->code.data[e->code.row-1])) {
-		printf("Split\n");
 		sds tmp = sdsdup(e->code.data[e->code.row-1]);
 
 		if (e->code.col != 0) {
@@ -80,23 +79,50 @@ void insert_new_line(Editor *e) {
 			e->code.data[e->code.row-1] = sdsnew("");
 		}
 		sdsrange(tmp, e->code.col, -1);
-		for (int i = e->code.len-1; i > e->code.row; i--) {
-			e->code.data[i] = e->code.data[i-1];
-		}
+		insert_element(e->code.data, e->code.row, e->code.len);
 		e->code.data[e->code.row] = tmp;
 	} else {
-		for (int i = e->code.len-1; i > e->code.row; i--) {
-			e->code.data[i] = e->code.data[i-1];
-		}
+		insert_element(e->code.data, e->code.row, e->code.len);
 		e->code.data[e->code.row] = sdsdup("");
 	}
 	e->code.col = 0;
 
 }
+void delete_char(Editor *e) {
+	sds tmp = sdsdup(e->code.data[e->code.row]);
+	if (e->code.col == 1) {
+		e->code.data[e->code.row] = sdsnew("");
+	} else {
+		sdsrange(e->code.data[e->code.row], 0, e->code.col-2);
+	}
+	sdsrange(tmp, e->code.col, -1);
+	e->code.data[e->code.row] = sdscatsds(e->code.data[e->code.row], tmp);
+	sdsfree(tmp);
+	e->code.col--;
+}
+void delete_line(Editor *e) {
+	sds tmp = sdsdup(e->code.data[e->code.row]);
+	e->code.row--;
+	e->code.col = sdslen(e->code.data[e->code.row]);
+	e->code.data[e->code.row] = sdscatsds(e->code.data[e->code.row], tmp);
+	sdsfree(tmp);
+	sdsfree(e->code.data[e->code.row+1]);
+	remove_element(e->code.data, e->code.row+1, e->code.len);
+	e->code.data = (sds *)realloc(e->code.data, (e->code.len-1) * sizeof(sds));
+	if (e->code.data == NULL) {
+		fprintf(stderr, "Could not remove element\n");
+		exit(0);
+	}
+	e->code.len--;
+}
 
 void handle_editor_on_input(Editor *e, char c) {
 	if (c == '\b') { // Backspace
-		printf("Backspace\n");	
+		if (e->code.col >= 1) {
+			delete_char(e);
+		} else if (e->code.row > 0) {
+			delete_line(e);
+		}
 	}
 	else if (c == 13) {	
 		insert_new_line(e);
