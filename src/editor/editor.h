@@ -5,6 +5,7 @@
 #include "../console.h"
 #include <stdbool.h>
 #include "../../include/sds.h"
+#include "code.h"
 
 enum EditorMode {
 	EDITOR_MODE_TERM,
@@ -22,13 +23,7 @@ typedef struct Editor {
 
 	enum EditorMode mode;
 
-	struct {
-		int yoff;
-		int col;
-		int row;
-		int len;
-		sds* data;
-	} code;
+	CodeEditor *code;
 
 	struct {
 		int initialDelay;
@@ -44,5 +39,7 @@ typedef struct Editor {
 Editor* editor_new(Console* c);
 void editor_run(Editor* e);
 void editor_close(Editor* e);
+
+bool arrow_keys(Editor *e, int key);
 
 #endif
