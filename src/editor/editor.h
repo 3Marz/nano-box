@@ -2,9 +2,9 @@
 #define EDITOR_H
 
 
-#include "console.h"
+#include "../console.h"
 #include <stdbool.h>
-#include "../include/sds.h"
+#include "../../include/sds.h"
 
 enum EditorMode {
 	EDITOR_MODE_TERM,

@@ -1,8 +1,8 @@
 
 #include "editor.h"
-#include "api.h"
-#include "ram.h"
-#include "utils.h"
+#include "../api.h"
+#include "../ram.h"
+#include "../utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
