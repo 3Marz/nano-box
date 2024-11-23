@@ -128,6 +128,7 @@ void handle_editor_on_input(Editor *e, char c) {
 		insert_new_line(e);
 	}
 	else { // Normal character
+		if (c == 9) c = 32; // Translate tab into space
 		e->code.data[e->code.row] = sdsinschar(e->code.data[e->code.row], e->code.col-1, c);
 		e->code.col++;
 	}
@@ -137,7 +138,7 @@ void handle_keyboad_input(Editor *e) {
 	// For keyboard
 	GetKeys(e->console);
 	char c = Peek(&e->console->ram, 0x526D); 
-	if(c != 0) {
+	if(c == 8 || c == 13 || c == 9 || c > 31) {
 		e->keyboard.holds[c]++;
 		if(e->keyboard.prev[c] == false) {
 			handle_editor_on_input(e, c);
