@@ -27,3 +27,12 @@ sds sdsinschar(sds str, int i, char ch) {
 
 	return str;
 }
+
+void remove_element(sds *arr, int index, int arr_len) {
+	int i;
+	for(i = index; i < arr_len - 1; i++) arr[i] = arr[i + 1];
+}
+void insert_element(sds *arr, int index, int arr_len) {
+	int i;
+	for (i = arr_len-1; i > index; i--) arr[i] = arr[i-1];
+}
