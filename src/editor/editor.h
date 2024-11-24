@@ -35,7 +35,7 @@ typedef struct Editor {
 
 } Editor;
 
-Editor* editor_new(Console* c);
+void editor_new(Editor* e, Console* c);
 void editor_run(Editor* e);
 void editor_close(Editor* e);
 

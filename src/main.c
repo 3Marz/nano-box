@@ -13,7 +13,8 @@ int main() {
 	console_new(&c);
 	luaapi_set_console(&c);
 
-	Editor* e = editor_new(&c);
+	Editor e;
+	editor_new(&e, &c);
 
 	Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Nano-Box", 0);
 	c.tscreen = screen;
@@ -24,7 +25,7 @@ int main() {
 		console_compose_frame(&c);
 
 		if (c.mode == CONSOLE_MODE_EDITOR)
-			editor_run(e);
+			editor_run(&e);
 		else if (c.mode == CONSOLE_MODE_GAME)
 			console_run_update(&c);
 
@@ -38,7 +39,7 @@ int main() {
 				break;
 		}
 		if(tigrKeyHeld(c.tscreen, TK_CONTROL) && tigrKeyDown(c.tscreen, 'R') && c.mode == CONSOLE_MODE_EDITOR) {
-			sds code_string = sdsjoin(e->code->data, e->code->len, "\n");
+			sds code_string = sdsjoin(e.code->data, e.code->len, "\n");
 			console_load_string(&c, code_string);
 			console_run_global(&c);
 			console_run_boot(&c);
@@ -49,7 +50,7 @@ int main() {
 	}
 	tigrFree(screen);
 	console_close(&c);
-	editor_close(e);
+	editor_close(&e);
 
 	return 0;
 }

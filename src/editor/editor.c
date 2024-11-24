@@ -6,10 +6,8 @@
 #include "code.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-Editor* editor_new(Console *c) {
-	Editor *e = malloc(sizeof(Editor));
+void editor_new(Editor* e, Console *c) {
 	e->console = c;
 	e->mode = EDITOR_MODE_CODEEDITOR;
 
@@ -21,8 +19,6 @@ Editor* editor_new(Console *c) {
 		e->keyboard.holds[i] = 0;
 		e->keyboard.prev[i] = 0;
 	}
-
-	return e;
 }
 
 bool arrow_keys(Editor *e, int key) {
@@ -150,5 +146,4 @@ void editor_run(Editor *e) {
 void editor_close(Editor *e) {
 	printf("Closing editor with acc %d lines\n", e->code->len);
 	code_close(e->code);
-	free(e);
 }
