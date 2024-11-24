@@ -9,48 +9,48 @@
 
 int main() {
 
-	Console c;
-	console_new(&c);
-	luaapi_set_console(&c);
+	Console console;
+	console_new(&console);
+	luaapi_set_console(&console);
 
-	Editor e;
-	editor_new(&e, &c);
+	Editor editor;
+	editor_new(&editor, &console);
 
 	Tigr *screen = tigrWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Nano-Box", 0);
-	c.tscreen = screen;
+	console.tscreen = screen;
 	
 	clock_t t = clock();
 
 	while (!tigrClosed(screen)) {
-		console_compose_frame(&c);
+		console_compose_frame(&console);
 
-		if (c.mode == CONSOLE_MODE_EDITOR)
-			editor_run(&e);
-		else if (c.mode == CONSOLE_MODE_GAME)
-			console_run_update(&c);
+		if (console.mode == CONSOLE_MODE_EDITOR)
+			editor_run(&editor);
+		else if (console.mode == CONSOLE_MODE_GAME)
+			console_run_update(&console);
 
 		tigrUpdate(screen);
 
 		// Shortcuts
-		if(tigrKeyDown(c.tscreen, TK_ESCAPE)) {
-			if(c.mode == CONSOLE_MODE_GAME)
-				c.mode = CONSOLE_MODE_EDITOR;
+		if(tigrKeyDown(console.tscreen, TK_ESCAPE)) {
+			if(console.mode == CONSOLE_MODE_GAME)
+				console.mode = CONSOLE_MODE_EDITOR;
 			else
 				break;
 		}
-		if(tigrKeyHeld(c.tscreen, TK_CONTROL) && tigrKeyDown(c.tscreen, 'R') && c.mode == CONSOLE_MODE_EDITOR) {
-			sds code_string = sdsjoin(e.code->data, e.code->len, "\n");
-			console_load_string(&c, code_string);
-			console_run_global(&c);
-			console_run_boot(&c);
-			c.mode = CONSOLE_MODE_GAME;
+		if(tigrKeyHeld(console.tscreen, TK_CONTROL) && tigrKeyDown(console.tscreen, 'R') && console.mode == CONSOLE_MODE_EDITOR) {
+			sds code_string = sdsjoin(editor.code->data, editor.code->len, "\n");
+			console_load_string(&console, code_string);
+			console_run_global(&console);
+			console_run_boot(&console);
+			console.mode = CONSOLE_MODE_GAME;
 		}
 
-		c.time_elapsed = ((clock() - t)/(float)CLOCKS_PER_SEC);
+		console.time_elapsed = ((clock() - t)/(float)CLOCKS_PER_SEC);
 	}
 	tigrFree(screen);
-	console_close(&c);
-	editor_close(&e);
+	console_close(&console);
+	editor_close(&editor);
 
 	return 0;
 }
