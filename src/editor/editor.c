@@ -49,7 +49,7 @@ bool arrow_keys(Editor *e, int key) {
 
 void draw_code(Editor *e) {
 	for (int i = 0; i < e->code->len; i++) {
-		Text(e->console, 0, (i*6)+e->code->yoff, e->code->data[i], 2);
+		Text(e->console, e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, e->code->data[i], 2);
 	}
 }
 
@@ -126,15 +126,25 @@ void handle_arrow_input(Editor *e) {
 	}
 }
 
+void code_editor_run(Editor *e) {
+	int cursorX = (e->code->scrollx*5) + (e->code->col+1)*5 - 2;
+	int cursorY = (e->code->scrolly*6) + e->code->yoff + (e->code->row*6);
+	if (cursorY > 128)             { e->code->scrolly--; }
+	if (cursorY < e->code->yoff)   { e->code->scrolly++; }
+	if (cursorX > 190)             { e->code->scrollx--; }
+	if (cursorX < 0)               { e->code->scrollx++; }
+	RectF(e->console, cursorX, cursorY, 5, 6, 7);
+	handle_arrow_input(e);
+	handle_keyboad_input(e);
+	draw_code(e);
+}
+
 void editor_run(Editor *e) {
 	Cls(e->console, 0);
-	RectF(e->console, 0, 0, 192, 7, 1);
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
-		RectF(e->console, (e->code->col+1)*5-2, e->code->yoff+(e->code->row*6), 5, 6, 7);
-		handle_arrow_input(e);
-		handle_keyboad_input(e);
-		draw_code(e);
+		code_editor_run(e);
 	}
+	RectF(e->console, 0, 0, 192, 7, 1);
 }
 
 void editor_close(Editor *e) {

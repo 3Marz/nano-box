@@ -7,6 +7,9 @@ typedef struct CodeEditor {
 	int yoff;
 	int col;
 	int row;
+	int scrolly;
+	int scrollx;
+
 	int len;
 	sds* data;
 } CodeEditor;

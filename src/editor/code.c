@@ -9,6 +9,8 @@ CodeEditor* code_init() {
 	e->yoff = 9;
 	e->col = 0;
 	e->row = 0;
+	e->scrollx = 0;
+	e->scrolly = 0;
 	e->len = 1;
 	e->data = (sds *)malloc(e->len*sizeof(sds));
 	if (e->data == NULL) {
