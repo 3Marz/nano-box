@@ -8,7 +8,6 @@
 #include "code.h"
 
 enum EditorMode {
-	EDITOR_MODE_TERM,
 	EDITOR_MODE_CODEEDITOR,
 	EDITOR_MODE_SPRITEEDITOR
 };

@@ -8,7 +8,7 @@
 #include <lua.h>
 #include <lualib.h>
 
-void console_new(Console *c, char *luafile) {
+void console_new(Console *c) {
 	ram_init(&c->ram);
 	c->L = luaL_newstate();
 	if (c->L == NULL) {
@@ -16,10 +16,13 @@ void console_new(Console *c, char *luafile) {
 		return;
 	}
 	luaL_openlibs(c->L);
+	c->mode = CONSOLE_MODE_EDITOR;
+}
 
-	int err = luaL_loadfile(c->L, luafile);
+void console_load_string(Console *c, char *str) {
+	int err = luaL_loadstring(c->L, str);
 	if (err) {
-		fprintf(stderr, "Lua: Couldn't Load File: %s\n", lua_tostring(c->L, -1));
+		fprintf(stderr, "Lua: Couldn't Load String: %s\n", lua_tostring(c->L, -1));
 		return;
 	}
 	// Register Api

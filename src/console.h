@@ -5,16 +5,24 @@
 #include "ram.h"
 #include "../include/tigr.h"
 
+enum ConsoleMode {
+	CONSOLE_MODE_TERMINAL,
+	CONSOLE_MODE_EDITOR,
+	CONSOLE_MODE_GAME
+};
+
 typedef struct Console {
 	Ram ram;
 	lua_State *L;
 	Tigr *tscreen;
+	enum ConsoleMode mode;
 	double time_elapsed;
 } Console;
 
-void console_new(Console* console, char* luafile);
-void console_run_global(Console *c);
+void console_new(Console* console);
+void console_load_string(Console *c, char *str);
 
+void console_run_global(Console *c);
 void console_run_boot(Console* console);
 void console_run_update(Console* console);
 void console_run_draw(Console* console);
