@@ -45,7 +45,11 @@ bool arrow_keys(Editor *e, int key) {
 
 void draw_code(Editor *e) {
 	for (int i = 0; i < e->code->len; i++) {
-		Text(e->console, e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, e->code->data[i], 2);
+		for (int j = 0; j < sdslen(e->code->data[i]); j++) {
+			char c[2] = "\0";
+			c[0] = e->code->data[i][j];
+			Text(e->console, (j*5) + e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, c, e->code->syntax[i][j]);
+		}
 	}
 }
 
@@ -65,6 +69,7 @@ void handle_editor_on_input(Editor *e, char c) {
 		e->code->data[e->code->row] = sdsinschar(e->code->data[e->code->row], e->code->col-1, c);
 		e->code->col++;
 	}
+	code_update_syntax(e->code);
 }
 
 void handle_keyboad_input(Editor *e) {
