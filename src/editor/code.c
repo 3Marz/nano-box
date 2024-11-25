@@ -9,7 +9,8 @@
 
 
 const char keywords[][10] = {
-	"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while",
+	"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while", "goto",
+
 	"time", "getkeys", "mouse", "btn", "btnp",
 	"peek", "peek2", "peek4", "poke", "poke2",
 	"cls", "pxset", "pxget", "line", "text", "rect", "rectf", "circ", "circf", "spr"
@@ -58,6 +59,7 @@ void color_word(int **syntax, int len, int x, int y, int color) {
 	}
 }
 
+// Worst thing i've wrote so far
 void code_update_syntax(CodeEditor *e) {
 	// Resize Syntax Array
 	e->syntax = (int **)realloc(e->syntax, e->len*sizeof(int*));
@@ -106,6 +108,7 @@ void code_update_syntax(CodeEditor *e) {
 						e->syntax[i][j] = 1;
 						e->syntax[i][j+1] = 1;
 						in_comment = false;
+						multi_comment = false;
 						j+=2;
 					}	
 				} else {
@@ -155,7 +158,7 @@ void code_update_syntax(CodeEditor *e) {
 			}
 
 			// Symbols
-			if (ispunct(e->data[i][j])) {
+			if (ispunct(e->data[i][j]) && e->data[i][j] != '_') {
 				e->syntax[i][j] = 3;
 				continue;
 			}
@@ -174,7 +177,7 @@ void code_update_syntax(CodeEditor *e) {
 			// keywords
 			for (int k = 0; k < 41; k++) {
 				if (is_word(e->data, keywords[k], strlen(keywords[k]), j, i) && !in_string) {
-					color_word(e->syntax, strlen(keywords[k]), j, i, 5);
+					color_word(e->syntax, strlen(keywords[k]), j, i, k>22 ? 6 : 5);
 					j+=strlen(keywords[k])-1;
 				}
 			}
