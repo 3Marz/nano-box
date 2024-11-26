@@ -19,6 +19,7 @@ void editor_new(Editor* e, Console *c) {
 		e->keyboard.holds[i] = 0;
 		e->keyboard.prev[i] = 0;
 	}
+	code_update_syntax(e->code);
 }
 
 bool arrow_keys(Editor *e, int key) {
@@ -134,14 +135,14 @@ void code_editor_run(Editor *e) {
 	if (cursorY < e->code->yoff)   { e->code->scrolly++; }
 	if (cursorX > 190)             { e->code->scrollx--; }
 	if (cursorX < 0)               { e->code->scrollx++; }
-	RectF(e->console, cursorX, cursorY, 5, 6, 7);
+	RectF(e->console, cursorX, cursorY, 5, 6, SYNTAX_CURSOR);
 	handle_arrow_input(e);
 	handle_keyboad_input(e);
 	draw_code(e);
 }
 
 void editor_run(Editor *e) {
-	Cls(e->console, 0);
+	Cls(e->console, SYNTAX_BACKGROUND);
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
 	}

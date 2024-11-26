@@ -30,6 +30,19 @@ CodeEditor* code_init() {
 		return NULL;
 	}
 	e->data[0] = sdsnew("");
+	/*e->data[0] = sdsnew("--This is Comment");*/
+	/*e->data[1] = sdsnew("local p1 = {");*/
+	/*e->data[2] = sdsnew(" x = 0,");*/
+	/*e->data[3] = sdsnew(" y = 0,");*/
+	/*e->data[4] = sdsnew("}");*/
+	/*e->data[5] = sdsnew("");*/
+	/*e->data[6] = sdsnew("function _update()");*/
+	/*e->data[7] = sdsnew(" rect(p.x, p.y, 20, 20, 2)");*/
+	/*e->data[8] = sdsnew(" ");*/
+	/*e->data[9] = sdsnew(" text(20, 20, 'Hello World!', 8)");*/
+	/*e->data[10] = sdsnew(" ");*/
+	/*e->data[11] = sdsnew(" if btn(2) then x = x+1 end");*/
+	/*e->data[12] = sdsnew("end");*/
 
 	e->syntax = (int **)malloc(e->len*sizeof(int*));
 	if (e->syntax == NULL) {
@@ -78,7 +91,7 @@ void code_update_syntax(CodeEditor *e) {
 	// Refill
 	for (int i = 0; i < e->len; i++) {
 		for (int j = 0; j < sdslen(e->data[i]); j++) {
-			e->syntax[i][j] = 2;
+			e->syntax[i][j] = SYNTAX_NORMAL;
 		}
 	}
 
@@ -105,15 +118,15 @@ void code_update_syntax(CodeEditor *e) {
 			if (in_comment) {
 				if (multi_comment) {
 					if (e->data[i][j] == ']' && e->data[i][j+1] == ']') {
-						e->syntax[i][j] = 1;
-						e->syntax[i][j+1] = 1;
+						e->syntax[i][j] = SYNTAX_COMMENT;
+						e->syntax[i][j+1] = SYNTAX_COMMENT;
 						in_comment = false;
 						multi_comment = false;
 						j+=2;
 					}	
 				} else {
 					if (j == sdslen(e->data[i])-1) {
-						e->syntax[i][j] = 1;
+						e->syntax[i][j] = SYNTAX_COMMENT;
 						in_comment = false;
 						j++;
 					}
@@ -121,7 +134,7 @@ void code_update_syntax(CodeEditor *e) {
 			}
 
 			if (in_comment) {
-				e->syntax[i][j] = 1;
+				e->syntax[i][j] = SYNTAX_COMMENT;
 				continue;
 			}
 
@@ -129,16 +142,16 @@ void code_update_syntax(CodeEditor *e) {
 			if ((e->data[i][j] == '\"' || e->data[i][j] == '\'') && !in_string) {
 				string_char[0] = e->data[i][j];
 				in_string = true;
-				e->syntax[i][j] = 9;
+				e->syntax[i][j] = SYNTAX_STRING;
 				continue;
 			}
 			if (in_string && string_char[0] == e->data[i][j]) {
-				e->syntax[i][j] = 9;
+				e->syntax[i][j] = SYNTAX_STRING;
 				in_string = false;
 				continue;
 			}
 			if (in_string) {
-				e->syntax[i][j] = 9;
+				e->syntax[i][j] = SYNTAX_STRING;
 				continue;
 			}
 			
@@ -147,29 +160,29 @@ void code_update_syntax(CodeEditor *e) {
 				in_multi_string = true;
 			}
 			if (e->data[i][j] == ']' && e->data[i][j+1] == ']') {
-				e->syntax[i][j] = 9;
-				e->syntax[i][j+1] = 9;
+				e->syntax[i][j] = SYNTAX_STRING;
+				e->syntax[i][j+1] = SYNTAX_STRING;
 				in_multi_string = false;
 				j+=2;
 			}
 			if (in_multi_string) {
-				e->syntax[i][j] = 9;
+				e->syntax[i][j] = SYNTAX_STRING;
 				continue;
 			}
 
 			// Symbols
 			if (ispunct(e->data[i][j]) && e->data[i][j] != '_') {
-				e->syntax[i][j] = 3;
+				e->syntax[i][j] = SYNTAX_SYMBOL;
 				continue;
 			}
 
 			// Numbers
 			if (isdigit(e->data[i][j]) && !isalpha(e->data[i][j-1])) {
-				if (!isdigit(e->data[i][j-1]) && e->syntax[i][j-1] != 4) {
-					e->syntax[i][j] = 4;
+				if (!isdigit(e->data[i][j-1]) && e->syntax[i][j-1] != SYNTAX_DIGIT) {
+					e->syntax[i][j] = SYNTAX_DIGIT;
 					continue;
-				} else if (e->syntax[i][j-1] == 4) {
-					e->syntax[i][j] = 4;
+				} else if (e->syntax[i][j-1] == SYNTAX_DIGIT) {
+					e->syntax[i][j] = SYNTAX_DIGIT;
 					continue;
 				}
 			}
@@ -177,7 +190,8 @@ void code_update_syntax(CodeEditor *e) {
 			// keywords
 			for (int k = 0; k < 41; k++) {
 				if (is_word(e->data, keywords[k], strlen(keywords[k]), j, i) && !in_string) {
-					color_word(e->syntax, strlen(keywords[k]), j, i, k>22 ? 6 : 5);
+					color_word(e->syntax, strlen(keywords[k]), j, i, 
+							k>22 ? SYNTAX_API : SYNTAX_KEYWORD);
 					j+=strlen(keywords[k])-1;
 				}
 			}
