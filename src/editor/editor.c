@@ -49,7 +49,7 @@ void draw_code(Editor *e) {
 		for (int j = 0; j < sdslen(e->code->data[i]); j++) {
 			char c[2] = "\0";
 			c[0] = e->code->data[i][j];
-			Text(e->console, (j*5) + e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, c, e->code->syntax[i][j]);
+			Text(&e->console->ram, (j*5) + e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, c, e->code->syntax[i][j]);
 		}
 	}
 }
@@ -135,18 +135,18 @@ void code_editor_run(Editor *e) {
 	if (cursorY < e->code->yoff)   { e->code->scrolly++; }
 	if (cursorX > 190)             { e->code->scrollx--; }
 	if (cursorX < 0)               { e->code->scrollx++; }
-	RectF(e->console, cursorX, cursorY, 5, 6, SYNTAX_CURSOR);
+	RectF(&e->console->ram, cursorX, cursorY, 5, 6, SYNTAX_CURSOR);
 	handle_arrow_input(e);
 	handle_keyboad_input(e);
 	draw_code(e);
 }
 
 void editor_run(Editor *e) {
-	Cls(e->console, SYNTAX_BACKGROUND);
+	Cls(&e->console->ram, SYNTAX_BACKGROUND);
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
 	}
-	RectF(e->console, 0, 0, 192, 7, 1);
+	RectF(&e->console->ram, 0, 0, 192, 7, 11);
 }
 
 void editor_close(Editor *e) {

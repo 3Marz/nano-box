@@ -89,7 +89,7 @@ int poke2(lua_State *L) {
 // Drawing Functions --------------------------------
 int cls(lua_State *L) {
 	int c = luaL_checkinteger(L, 1);
-	Cls(console, c);
+	Cls(&console->ram, c);
 	return 0;
 }
 
@@ -97,14 +97,14 @@ int pxset(lua_State *L) {
 	int x = luaL_checknumber(L, 1);
 	int y = luaL_checknumber(L, 2);
 	int c = luaL_checkinteger(L, 3);
-	PxSet(console, floor(x), floor(y), c);
+	PxSet(&console->ram, floor(x), floor(y), c);
 	return 0;
 }
 
 int pxget(lua_State *L) {
 	int x = luaL_checkinteger(L, 1);
 	int y = luaL_checkinteger(L, 2);
-	lua_pushinteger(L, PxGet(console, x, y));
+	lua_pushinteger(L, PxGet(&console->ram, x, y));
 	return 1;
 }
 
@@ -114,7 +114,7 @@ int line(lua_State *L) {
 	int x2 = luaL_checknumber(L, 3);
 	int y2 = luaL_checknumber(L, 4);
 	int c = luaL_checkinteger(L, 5);
-	Line(console, x1, y1, x2, y2, c);
+	Line(&console->ram, x1, y1, x2, y2, c);
 	return 0;
 }
 
@@ -123,7 +123,7 @@ int text(lua_State *L) {
 	int y = luaL_checkinteger(L, 2);
 	char *s = luaL_checkstring(L, 3);
 	int c = luaL_checkinteger(L, 4);
-	Text(console, x, y, s, c);
+	Text(&console->ram, x, y, s, c);
 	return 0;
 }
 
@@ -133,7 +133,7 @@ int rect(lua_State *L) {
 	int w = luaL_checknumber(L, 3);
 	int h = luaL_checknumber(L, 4);
 	int c = luaL_checkinteger(L, 5);
-	Rect(console, x, y, w, h, c);
+	Rect(&console->ram, x, y, w, h, c);
 	return 0;
 }
 
@@ -143,7 +143,7 @@ int rectf(lua_State *L) {
 	int w = luaL_checknumber(L, 3);
 	int h = luaL_checknumber(L, 4);
 	int c = luaL_checkinteger(L, 5);
-	RectF(console, x, y, w, h, c);
+	RectF(&console->ram, x, y, w, h, c);
 	return 0;
 }
 
@@ -152,7 +152,7 @@ int circ(lua_State *L) {
 	int y = luaL_checknumber(L, 2);
 	int r = luaL_checknumber(L, 3);
 	int c = luaL_checkinteger(L, 4);
-	Circ(console, x, y, r, c);
+	Circ(&console->ram, x, y, r, c);
 	return 0;
 }
 int circf(lua_State *L) {
@@ -160,7 +160,7 @@ int circf(lua_State *L) {
 	int y = luaL_checknumber(L, 2);
 	int r = luaL_checknumber(L, 3);
 	int c = luaL_checkinteger(L, 4);
-	CircF(console, x, y, r, c);
+	CircF(&console->ram, x, y, r, c);
 	return 0;
 }
 
@@ -170,7 +170,7 @@ int spr(lua_State *L) {
 	int y = luaL_checknumber(L, 3);
 	int w = luaL_checkinteger(L, 4);
 	int h = luaL_checkinteger(L, 5);
-	Spr(console, id, x, y, w, h);
+	Spr(&console->ram, id, x, y, w, h);
 	return 0;
 }
 
