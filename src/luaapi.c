@@ -88,7 +88,7 @@ int poke2(lua_State *L) {
 
 // Drawing Functions --------------------------------
 int cls(lua_State *L) {
-	int c = luaL_checkinteger(L, 1);
+	int c = luaL_optinteger(L, 1, 0);
 	Cls(&console->ram, c);
 	return 0;
 }
@@ -168,9 +168,10 @@ int spr(lua_State *L) {
 	int id = luaL_checkinteger(L, 1);
 	int x = luaL_checknumber(L, 2);
 	int y = luaL_checknumber(L, 3);
-	int w = luaL_checkinteger(L, 4);
-	int h = luaL_checkinteger(L, 5);
-	Spr(&console->ram, id, x, y, w, h);
+	int colorkey = luaL_optinteger(L, 4, 0);
+	int w = luaL_optinteger(L, 5, 1);
+	int h = luaL_optinteger(L, 5, 1);
+	Spr(&console->ram, id, x, y, colorkey, w, h);
 	return 0;
 }
 

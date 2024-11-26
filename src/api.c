@@ -146,7 +146,7 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 		if(s[i] == '\x07')  { color = 6; i++; }
 		if(s[i] == '\x08')  { color = 7; i++; }
 		if(s[i] == '\x09')  { color = 8; i++; }
-		if(s[i] == '\x00')  { color = 9; i++; }
+		if(s[i] == '\x10')  { color = 9; i++; }
 		if(s[i] == '\x11') { color = 10; i++; }
 		if(s[i] == '\x12') { color = 11; i++; }
 		if(s[i] == '\x13') { color = 12; i++; }
@@ -160,7 +160,7 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 			int hex = Peek(ram, addr+j);
 			for(int k = 0; k < 8; k++) {
 				if(hex & (1 << (7-k))) { // Thanks Codium!
-					PxSet(ram, x+k+xoff, yoff+j, color);
+					PxSet(ram, (x+k+xoff)-3, yoff+j, color);
 				}
 			}
 		}
@@ -168,13 +168,17 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 	}
 }
 
-void Spr(Ram *ram, int id, int x, int y, int w, int h) {
+void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h) {
 	int id_addr = 0x326A+(id*32);
 	for(int j = 0; j < h*8; j++) {
 		for (int i = 0; i < w*4; i++) {
 			int colors = Peek(ram, id_addr+i+(j*4));
-			PxSet(ram, x+(i*2), y+j, colors>>4);
-			PxSet(ram, x+(i*2)+1, y+j, colors&0xf);
+			if((colors>>4) != colorkey) {
+				PxSet(ram, x+(i*2), y+j, colors>>4);
+			}
+			if ((colors&0xf) != colorkey) {
+				PxSet(ram, x+(i*2)+1, y+j, colors&0xf);
+			}
 		}
 	}
 }

@@ -188,7 +188,7 @@ void code_update_syntax(CodeEditor *e) {
 			}
 
 			// keywords
-			for (int k = 0; k < 41; k++) {
+			for (int k = 0; k < 42; k++) {
 				if (is_word(e->data, keywords[k], strlen(keywords[k]), j, i) && !in_string) {
 					color_word(e->syntax, strlen(keywords[k]), j, i, 
 							k>22 ? SYNTAX_API : SYNTAX_KEYWORD);
