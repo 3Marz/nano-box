@@ -22,12 +22,15 @@ int main() {
 	clock_t t = clock();
 
 	while (!tigrClosed(screen)) {
-		console_compose_frame(&console);
 
-		if (console.mode == CONSOLE_MODE_EDITOR)
+		if (console.mode == CONSOLE_MODE_EDITOR) {
+			console_compose_frame(&console, &editor.ram);
 			editor_run(&editor);
-		else if (console.mode == CONSOLE_MODE_GAME)
+		}
+		else if (console.mode == CONSOLE_MODE_GAME) {
+			console_compose_frame(&console, &console.ram);
 			console_run_update(&console);
+		}
 
 		tigrUpdate(screen);
 

@@ -7,11 +7,29 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+
+const int editorSprites[] = {
+	0x00, 0x00, 0x00, 0x00,
+	0x00, 0x20, 0x02, 0x00,
+	0x02, 0x00, 0x00, 0x20,
+	0x02, 0x00, 0x00, 0x20,
+	0x02, 0x00, 0x00, 0x20,
+	0x02, 0x00, 0x00, 0x20,
+	0x00, 0x20, 0x02, 0x00,
+	0x00, 0x00, 0x00, 0x00,
+};
+
 void editor_new(Editor* e, Console *c) {
 	e->console = c;
 	e->mode = EDITOR_MODE_CODEEDITOR;
+	ram_init(&e->ram);
 
 	e->code = code_init();
+	int sprlen = sizeof(editorSprites) / sizeof(int);
+	//Load sprites
+	for (int i = 0x326A; i < 0x326A+sprlen; i++) {
+		Poke(&e->ram, i, editorSprites[i - 0x326A]);
+	}
 
 	e->keyboard.initialDelay = 20;
 	e->keyboard.repeatDelay = 2;
@@ -49,7 +67,7 @@ void draw_code(Editor *e) {
 		for (int j = 0; j < sdslen(e->code->data[i]); j++) {
 			char c[2] = "\0";
 			c[0] = e->code->data[i][j];
-			Text(&e->console->ram, (j*5) + e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, c, e->code->syntax[i][j]);
+			Text(&e->ram, (j*5) + e->code->scrollx*5, (e->code->scrolly*6) + (i*6) + e->code->yoff, c, e->code->syntax[i][j]);
 		}
 	}
 }
@@ -135,18 +153,19 @@ void code_editor_run(Editor *e) {
 	if (cursorY < e->code->yoff)   { e->code->scrolly++; }
 	if (cursorX > 190)             { e->code->scrollx--; }
 	if (cursorX < 0)               { e->code->scrollx++; }
-	RectF(&e->console->ram, cursorX, cursorY, 5, 6, SYNTAX_CURSOR);
+	RectF(&e->ram, cursorX, cursorY, 5, 6, SYNTAX_CURSOR);
 	handle_arrow_input(e);
 	handle_keyboad_input(e);
 	draw_code(e);
 }
 
 void editor_run(Editor *e) {
-	Cls(&e->console->ram, SYNTAX_BACKGROUND);
+	Cls(&e->ram, SYNTAX_BACKGROUND);
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
 	}
-	RectF(&e->console->ram, 0, 0, 192, 7, 11);
+	RectF(&e->ram, 0, 0, 192, 7, 11);
+	Spr(&e->ram, 0, 0, 0, 1, 1);
 }
 
 void editor_close(Editor *e) {

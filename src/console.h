@@ -27,7 +27,7 @@ void console_run_boot(Console* console);
 void console_run_update(Console* console);
 void console_run_draw(Console* console);
 
-void console_compose_frame(Console* console);
+void console_compose_frame(Console* console, Ram* ram);
 
 void console_close(Console *console);
 

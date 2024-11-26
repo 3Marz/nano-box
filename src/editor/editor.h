@@ -19,6 +19,7 @@ typedef struct ArrowKeyState {
 
 typedef struct Editor {
 	Console *console;
+	Ram ram;
 
 	enum EditorMode mode;
 

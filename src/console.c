@@ -60,12 +60,12 @@ void console_run_draw(Console *c) {
 	}
 }
 
-void console_compose_frame(Console *console) {
+void console_compose_frame(Console *console, Ram *ram) {
 	int y = 0;
 	for(int i = 0; i < 0x3000; i++) {
-		uint8_t colors = Peek(&console->ram, i);
-		TPixel c1 = color_from_palette(&console->ram, colors >> 4);
-		TPixel c2 = color_from_palette(&console->ram, colors & 0xF);
+		uint8_t colors = Peek(ram, i);
+		TPixel c1 = color_from_palette(ram, colors >> 4);
+		TPixel c2 = color_from_palette(ram, colors & 0xF);
 		int x = i * 2;
 		tigrPlot(console->tscreen, x%SCREEN_WIDTH, y, c1);
 		tigrPlot(console->tscreen, (x%SCREEN_WIDTH)+1, y, c2);
