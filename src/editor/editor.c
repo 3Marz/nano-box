@@ -176,6 +176,17 @@ void editor_run(Editor *e) {
 	RectF(&e->ram, 0, 0, 192, 8, 14);
 	Spr(&e->ram, 0, 0, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1);
 	Spr(&e->ram, 1, 8, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1);
+
+	int mx, my, mbtn;
+	tigrMouse(e->console->tscreen, &mx, &my, &mbtn);
+	printf("%i\n", mbtn);
+
+	if (pos_in_rect(0, 0, 8, 8, mx, my) && mbtn == 1) {
+		e->mode = EDITOR_MODE_CODEEDITOR;
+	}
+	if (pos_in_rect(8, 0, 8, 8, mx, my) && mbtn == 1) {
+		e->mode = EDITOR_MODE_SPRITEEDITOR;
+	}
 }
 
 void editor_close(Editor *e) {

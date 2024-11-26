@@ -36,3 +36,9 @@ void insert_element(sds *arr, int index, int arr_len) {
 	int i;
 	for (i = arr_len-1; i > index; i--) arr[i] = arr[i-1];
 }
+
+int pos_in_rect(int rx, int ry, int rw, int rh, int x, int y) {
+	return x >= rx && x <= rx+rw && y >= ry && y <= ry+rh;
+}
+
+
