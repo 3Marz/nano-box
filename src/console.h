@@ -3,7 +3,6 @@
 
 #include <lua.h>
 #include "ram.h"
-#include "../include/tigr.h"
 
 enum ConsoleMode {
 	CONSOLE_MODE_TERMINAL,
@@ -14,9 +13,7 @@ enum ConsoleMode {
 typedef struct Console {
 	Ram ram;
 	lua_State *L;
-	Tigr *tscreen;
 	enum ConsoleMode mode;
-	double time_elapsed;
 } Console;
 
 void console_new(Console* console);
@@ -27,7 +24,7 @@ void console_run_boot(Console* console);
 void console_run_update(Console* console);
 void console_run_draw(Console* console);
 
-void console_compose_frame(Console* console, Ram* ram);
+void console_compose_frame(Ram* ram);
 
 void console_close(Console *console);
 

@@ -1,8 +1,8 @@
 
 #include "utils.h"
 
-TPixel color_from_palette(Ram *ram, int index) {
-	return (TPixel){
+Color color_from_palette(Ram *ram, int index) {
+	return (Color){
 		Peek(ram, 0x3000+(index*3)),
 		Peek(ram, 0x3000+(index*3)+1),
 		Peek(ram, 0x3000+(index*3)+2),
@@ -41,4 +41,11 @@ int pos_in_rect(int rx, int ry, int rw, int rh, int x, int y) {
 	return x >= rx && x <= rx+rw && y >= ry && y <= ry+rh;
 }
 
+int min(int a, int b) {
+	return a < b ? a : b;
+}
+
+int IsKeyPressedNRepeat(int key) {
+	return (IsKeyPressed(key) || IsKeyPressedRepeat(key));
+}
 

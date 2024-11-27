@@ -5,8 +5,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <math.h>
-#include <stdio.h>
-#include <time.h>
+#include <raylib.h>
 
 // IDK about this, but whatever
 Console *console;
@@ -16,23 +15,23 @@ void luaapi_set_console(Console *c) {
 
 // Core Functions --------------------------------
 int _time(lua_State *L) {
-	lua_pushnumber(L, console->time_elapsed);
+	lua_pushnumber(L, GetTime());
 	return 1;
 }
 int getkeys(lua_State *L) { // Cheating TODO
-	GetKeys(console);
+	GetKeys(&console->ram);
 	lua_pushinteger(L, Peek(&console->ram, 0x526D));
 	return 1;
 }
 int mouse(lua_State *L) { // Cheating TODO
-	Mouse(console);
+	Mouse(&console->ram);
 	lua_pushinteger(L, Peek(&console->ram, 0x526A));
 	lua_pushinteger(L, Peek(&console->ram, 0x526B));
 	lua_pushinteger(L, Peek(&console->ram, 0x526C));
 	return 3;
 }
 int btn(lua_State *L) {
-	Btn(console);
+	Btn(&console->ram);
 	int b = luaL_checkinteger(L, 1);
 	int byte = Peek(&console->ram, 0x526F);
 	int bit = byte >> (7-b) & 0b1;
@@ -44,7 +43,7 @@ int btn(lua_State *L) {
 	return 1;
 }
 int btnp(lua_State *L) {
-	BtnP(console);
+	BtnP(&console->ram);
 	int b = luaL_checkinteger(L, 1);
 	int byte = Peek(&console->ram, 0x526E);
 	int bit = byte >> (7-b) & 0b1;

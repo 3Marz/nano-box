@@ -3,6 +3,8 @@
 #include "console.h"
 #include "globals.h"
 #include "ram.h"
+#include "utils.h"
+#include <raylib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -183,54 +185,59 @@ void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h) {
 	}
 }
 
-void Mouse(Console *console) {
+void Mouse(Ram *ram) {
 	int x, y, btn;
-	tigrMouse(console->tscreen, &x, &y, &btn);
-	Poke(&console->ram, 0x526A, x);
-	Poke(&console->ram, 0x526B, y);
-	Poke(&console->ram, 0x526C, btn);
+	int scale = min((float)GetScreenWidth()/SCREEN_WIDTH, (float)GetScreenHeight()/SCREEN_HEIGHT);
+	x = (GetMouseX()-((GetScreenWidth()-(SCREEN_WIDTH*scale))*0.5f))/scale;
+	y = (GetMouseY()-((GetScreenHeight()-(SCREEN_HEIGHT*scale))*0.5f))/scale;
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+		btn = 1;
+	}
+	Poke(ram, 0x526A, x);
+	Poke(ram, 0x526B, y);
+	Poke(ram, 0x526C, btn);
 }
 
-void GetKeys(Console *console) {
-	Poke(&console->ram, 0x526D, tigrReadChar(console->tscreen));
+void GetKeys(Ram *ram) {
+	Poke(ram, 0x526D, GetCharPressed());
 }
 
-void Btn(Console *console) {
+void Btn(Ram *ram) {
 	int binArray[8] = {0,0,0,0,0,0,0,0};
-	int hex = Peek(&console->ram, 0x526F);
+	int hex = Peek(ram, 0x526F);
 	for(int i = 0; i < 8; i++) {
 		if(hex & (1 << (7-i))) {
 			binArray[i] = 1;
 		}
 	}
-	if(tigrKeyHeld(console->tscreen, TK_UP))    { binArray[0] = 1; } else { binArray[0] = 0; }
-	if(tigrKeyHeld(console->tscreen, TK_DOWN))  { binArray[1] = 1; } else { binArray[1] = 0; }
-	if(tigrKeyHeld(console->tscreen, TK_RIGHT)) { binArray[2] = 1; } else { binArray[2] = 0; }
-	if(tigrKeyHeld(console->tscreen, TK_LEFT))  { binArray[3] = 1; } else { binArray[3] = 0; }
-	if(tigrKeyHeld(console->tscreen, 'Z'))      { binArray[4] = 1; } else { binArray[4] = 0; }
-	if(tigrKeyHeld(console->tscreen, 'X'))      { binArray[5] = 1; } else { binArray[5] = 0; }
+	if(IsKeyDown(KEY_UP))     { binArray[0] = 1; } else { binArray[0] = 0; }
+	if(IsKeyDown(KEY_DOWN))   { binArray[1] = 1; } else { binArray[1] = 0; }
+	if(IsKeyDown(KEY_RIGHT))  { binArray[2] = 1; } else { binArray[2] = 0; }
+	if(IsKeyDown(KEY_LEFT))   { binArray[3] = 1; } else { binArray[3] = 0; }
+	if(IsKeyDown(KEY_Z))      { binArray[4] = 1; } else { binArray[4] = 0; }
+	if(IsKeyDown(KEY_X))      { binArray[5] = 1; } else { binArray[5] = 0; }
 	int bin = 0;
 	int mult = 1;
 	for(int i = 7; i >= 0; i--) {
 		bin += binArray[i]*mult;
 		mult *= 2;
 	}
-	Poke(&console->ram, 0x526F, bin);
+	Poke(ram, 0x526F, bin);
 }
-void BtnP(Console *console) {
+void BtnP(Ram *ram) {
 	int binArray[8] = {0,0,0,0,0,0,0,0};
-	if(tigrKeyDown(console->tscreen, TK_UP))    { binArray[0] = 1; }
-	if(tigrKeyDown(console->tscreen, TK_DOWN))  { binArray[1] = 1; }
-	if(tigrKeyDown(console->tscreen, TK_RIGHT)) { binArray[2] = 1; }
-	if(tigrKeyDown(console->tscreen, TK_LEFT))  { binArray[3] = 1; }
-	if(tigrKeyDown(console->tscreen, 'Z'))      { binArray[4] = 1; }
-	if(tigrKeyDown(console->tscreen, 'X'))      { binArray[5] = 1; }
+	if(IsKeyDown(KEY_UP))     { binArray[0] = 1; }
+	if(IsKeyDown(KEY_DOWN))   { binArray[1] = 1; }
+	if(IsKeyDown(KEY_RIGHT))  { binArray[2] = 1; }
+	if(IsKeyDown(KEY_LEFT))   { binArray[3] = 1; }
+	if(IsKeyDown(KEY_Z))      { binArray[4] = 1; }
+	if(IsKeyDown(KEY_X))      { binArray[5] = 1; }
 	int bin = 0;
 	int mult = 1;
 	for(int i = 7; i >= 0; i--) {
 		bin += binArray[i]*mult;
 		mult *= 2;
 	}
-	Poke(&console->ram, 0x526E, bin);
+	Poke(ram, 0x526E, bin);
 }
 

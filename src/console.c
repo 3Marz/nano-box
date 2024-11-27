@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "ram.h"
 #include "utils.h"
+#include <raylib.h>
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
@@ -60,15 +61,15 @@ void console_run_draw(Console *c) {
 	}
 }
 
-void console_compose_frame(Console *console, Ram *ram) {
+void console_compose_frame(Ram *ram) {
 	int y = 0;
 	for(int i = 0; i < 0x3000; i++) {
 		uint8_t colors = Peek(ram, i);
-		TPixel c1 = color_from_palette(ram, colors >> 4);
-		TPixel c2 = color_from_palette(ram, colors & 0xF);
+		Color c1 = color_from_palette(ram, colors >> 4);
+		Color c2 = color_from_palette(ram, colors & 0xF);
 		int x = i * 2;
-		tigrPlot(console->tscreen, x%SCREEN_WIDTH, y, c1);
-		tigrPlot(console->tscreen, (x%SCREEN_WIDTH)+1, y, c2);
+		DrawPixel(x%SCREEN_WIDTH, y, c1);
+		DrawPixel((x%SCREEN_WIDTH)+1, y, c2);
 		if(i%(SCREEN_WIDTH/2) == (SCREEN_WIDTH/2)-1) {
 			y++;
 		}
