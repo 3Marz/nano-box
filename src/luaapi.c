@@ -20,20 +20,20 @@ int _time(lua_State *L) {
 }
 int getkeys(lua_State *L) { // Cheating TODO
 	GetKeys(&console->ram);
-	lua_pushinteger(L, Peek(&console->ram, 0x526D));
+	lua_pushinteger(L, Peek(&console->ram, RAM_KEYBOARD_START));
 	return 1;
 }
 int mouse(lua_State *L) { // Cheating TODO
 	Mouse(&console->ram);
-	lua_pushinteger(L, Peek(&console->ram, 0x526A));
-	lua_pushinteger(L, Peek(&console->ram, 0x526B));
-	lua_pushinteger(L, Peek(&console->ram, 0x526C));
+	lua_pushinteger(L, Peek(&console->ram, RAM_MOUSE_START));
+	lua_pushinteger(L, Peek(&console->ram, RAM_MOUSE_START+1));
+	lua_pushinteger(L, Peek(&console->ram, RAM_MOUSE_START+2));
 	return 3;
 }
 int btn(lua_State *L) {
 	Btn(&console->ram);
 	int b = luaL_checkinteger(L, 1);
-	int byte = Peek(&console->ram, 0x526F);
+	int byte = Peek(&console->ram, RAM_BUTTONS_START+1);
 	int bit = byte >> (7-b) & 0b1;
 	if(bit == 1) {
 		lua_pushboolean(L, 1);
@@ -45,7 +45,7 @@ int btn(lua_State *L) {
 int btnp(lua_State *L) {
 	BtnP(&console->ram);
 	int b = luaL_checkinteger(L, 1);
-	int byte = Peek(&console->ram, 0x526E);
+	int byte = Peek(&console->ram, RAM_BUTTONS_START);
 	int bit = byte >> (7-b) & 0b1;
 	if(bit == 1) {
 		lua_pushboolean(L, 1);

@@ -193,12 +193,12 @@ void ram_init(Ram *ram) {
 	/*}*/
 
 	//Load Palette
-	for(int i = 0x3000; i < 0x3030; i++) {
+	for(int i = RAM_PALETTE_START; i < RAM_FONT_START; i++) {
 		ram->data[i] = palette[i - 0x3000];
 	}
 	
 	//Load Font
-	for(int i = 0x3030; i < 0x326A; i++) {
+	for(int i = RAM_FONT_START; i < RAM_SPRITES_START; i++) {
 		ram->data[i] = fontMem[i - 0x3030];
 	}
 	/*// Load test sprites*/

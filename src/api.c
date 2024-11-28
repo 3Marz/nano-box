@@ -156,7 +156,7 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 		if(s[i] == '\x15') { color = 14; i++; }
 		if(s[i] == '\x16') { color = 15; i++; }
 
-		int addr = 0x3030+(char_height*(s[i]-32));
+		int addr = RAM_FONT_START+(char_height*(s[i]-32));
 
 		for(int j = 0; j < char_height; j++) {
 			int hex = Peek(ram, addr+j);
@@ -171,7 +171,7 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 }
 
 void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h) {
-	int id_addr = 0x326A+(id*32);
+	int id_addr = RAM_SPRITES_START+(id*32);
 	for(int j = 0; j < h*8; j++) {
 		for (int i = 0; i < w*4; i++) {
 			int colors = Peek(ram, id_addr+i+(j*4));
@@ -193,18 +193,18 @@ void Mouse(Ram *ram) {
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 		btn = 1;
 	}
-	Poke(ram, 0x526A, x);
-	Poke(ram, 0x526B, y);
-	Poke(ram, 0x526C, btn);
+	Poke(ram, RAM_MOUSE_START ,  x);
+	Poke(ram, RAM_MOUSE_START+1, y);
+	Poke(ram, RAM_MOUSE_START+2, btn);
 }
 
 void GetKeys(Ram *ram) {
-	Poke(ram, 0x526D, GetCharPressed());
+	Poke(ram, RAM_KEYBOARD_START, GetCharPressed());
 }
 
 void Btn(Ram *ram) {
 	int binArray[8] = {0,0,0,0,0,0,0,0};
-	int hex = Peek(ram, 0x526F);
+	int hex = Peek(ram, RAM_BUTTONS_START+1);
 	for(int i = 0; i < 8; i++) {
 		if(hex & (1 << (7-i))) {
 			binArray[i] = 1;
@@ -222,7 +222,7 @@ void Btn(Ram *ram) {
 		bin += binArray[i]*mult;
 		mult *= 2;
 	}
-	Poke(ram, 0x526F, bin);
+	Poke(ram, RAM_BUTTONS_START+1, bin);
 }
 void BtnP(Ram *ram) {
 	int binArray[8] = {0,0,0,0,0,0,0,0};
@@ -238,6 +238,6 @@ void BtnP(Ram *ram) {
 		bin += binArray[i]*mult;
 		mult *= 2;
 	}
-	Poke(ram, 0x526E, bin);
+	Poke(ram, RAM_BUTTONS_START, bin);
 }
 

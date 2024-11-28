@@ -31,7 +31,7 @@ const int editorSprites[] = {
 
 void editor_new(Editor* e, Console *c) {
 	e->console = c;
-	e->mode = EDITOR_MODE_CODEEDITOR;
+	e->mode = EDITOR_MODE_SPRITEEDITOR;
 	ram_init(&e->ram);
 
 	e->code = code_init();
@@ -57,7 +57,7 @@ void draw_code(Editor *e) {
 void handle_keyboad_input(Editor *e) {
 	// For Characters
 	GetKeys(&e->ram);
-	char c = Peek(&e->ram, 0x526D); 
+	char c = Peek(&e->ram, RAM_KEYBOARD_START); 
 	if (c != 0) {
 		e->code->data[e->code->row] = sdsinschar(e->code->data[e->code->row], e->code->col-1, c);
 		e->code->col++;
@@ -131,28 +131,61 @@ void code_editor_run(Editor *e) {
 	draw_code(e);
 }
 
+int sc = 12;
+int num = 180;
+void sprite_editor_run(Editor *e) {
+	RectF(&e->ram, 192/2, 0, 192/2, 128, 15);
+	int xoff = 0;
+	int yoff = 8;
+
+	if (IsKeyPressed(KEY_DOWN))
+		sc--;
+	if (IsKeyPressed(KEY_UP))
+		sc++;
+	if (IsKeyPressed(KEY_RIGHT))
+		num++;
+	if (IsKeyPressed(KEY_LEFT))
+		num--;
+
+	char s[50];
+	sprintf(s, "Nums %i,\nScale %i", num, sc);
+
+	Text(&e->ram, 120, 12, s, 2);
+
+	for (int i = 0; i < num; i++) {
+		Rect(&e->ram, xoff, yoff, 8, 8, 2);
+		xoff += 8;
+		if (xoff >= 8*sc) {
+			xoff = 0;
+			yoff += 8;
+		}
+	}
+}
+
 void editor_run(Editor *e) {
 	Cls(&e->ram, SYNTAX_BACKGROUND);
 
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
+	} else if (e->mode == EDITOR_MODE_SPRITEEDITOR) {
+		sprite_editor_run(e);
 	}
 
 	// Topbar
 	RectF(&e->ram, 0, 0, 192, 8, 14);
-	Spr(&e->ram, 0, 0, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1);
-	Spr(&e->ram, 1, 8, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1);
+	Spr(&e->ram, 0, 192-8, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1);
+	Spr(&e->ram, 1, 192-16, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1);
 
 	// Handle mouse & button
 	Mouse(&e->ram);
-	int mx = Peek(&e->ram, 0x526A);
-	int my = Peek(&e->ram, 0x526B);
-	int mbtn = Peek(&e->ram, 0x526C);
+	int mx = Peek(&e->ram, RAM_MOUSE_START);
+	int my = Peek(&e->ram, RAM_MOUSE_START+1);
+	int mbtn = Peek(&e->ram, RAM_MOUSE_START+2);
 
-	if (pos_in_rect(0, 0, 8, 8, mx, my) && mbtn == 1) {
+	if (pos_in_rect(192-8, 0, 8, 8, mx, my) && mbtn == 1) {
 		e->mode = EDITOR_MODE_CODEEDITOR;
 	}
-	if (pos_in_rect(8, 0, 8, 8, mx, my) && mbtn == 1) {
+	if (pos_in_rect(192-16, 0, 8, 8, mx, my) && mbtn == 1) {
 		e->mode = EDITOR_MODE_SPRITEEDITOR;
 	}
 }
