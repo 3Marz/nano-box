@@ -144,8 +144,8 @@ void editor_run(Editor *e) {
 
 	// Topbar
 	RectF(&e->ram, 0, 0, 192, 8, 14);
-	Spr(&e->ram, 0, 192-8, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1, 1);
-	Spr(&e->ram, 1, 192-16, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1, 1);
+	Spr(&e->ram, &e->ram, 0, 192-8, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1, 1);
+	Spr(&e->ram, &e->ram, 1, 192-16, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1, 1);
 
 	// Handle mouse & button
 	Mouse(&e->ram);

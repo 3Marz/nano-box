@@ -18,7 +18,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 	// Right Side
 	Rectangle canvas = {104, 16, 8*8, 8*8};
 	Rect(ram, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
-	Spr(ram, e->selected, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
+	Spr(ram, ram, e->selected, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
 
 	// Left Side
 	int xoff = 0;
@@ -35,7 +35,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 	}
 
 	for (int i = 0; i < 180; i++) {
-		Spr(ram, i, xoff, yoff, 0, 1, 1, 1);
+		Spr(ram, ram, i, xoff, yoff, 0, 1, 1, 1);
 
 		if (e->selected == i)
 			Rect(ram, xoff-1, yoff-1, 10, 10, 2);

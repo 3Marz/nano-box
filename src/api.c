@@ -170,16 +170,16 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 	}
 }
 
-void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h, int scale) {
+void Spr(Ram *spriteRam, Ram *drawRam, int id, int x, int y, int colorkey, int w, int h, int scale) {
 	int id_addr = RAM_SPRITES_START+(id*32);
 	for(int j = 0; j < h*8; j++) {
 		for (int i = 0; i < w*4; i++) {
-			int colors = Peek(ram, id_addr+i+(j*4));
+			int colors = Peek(spriteRam, id_addr+i+(j*4));
 			if((colors>>4) != colorkey) {
-				RectF(ram, x+((i*scale)*2), y+j+(j*(scale-1)), scale, scale, colors>>4);
+				RectF(drawRam, x+((i*scale)*2), y+j+(j*(scale-1)), scale, scale, colors>>4);
 			}
 			if ((colors&0xf) != colorkey) {
-				RectF(ram, x+((i*scale)*2)+scale, y+j+(j*(scale-1)), scale, scale, colors&0xf);
+				RectF(drawRam, x+((i*scale)*2)+scale, y+j+(j*(scale-1)), scale, scale, colors&0xf);
 			}
 		}
 	}
