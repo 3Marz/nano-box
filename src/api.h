@@ -13,7 +13,7 @@ void Rect(Ram *ram, int x, int y, int w, int h, int c);
 void RectF(Ram *ram, int x, int y, int w, int h, int c);
 void Circ(Ram *ram, int x, int y, int r, int c);
 void CircF(Ram *ram, int x, int y, int r, int c);
-void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h);
+void Spr(Ram *ram, int id, int x, int y, int colorkey, int w, int h, int scale);
 void GetKeys(Ram *ram);
 void Mouse(Ram *ram);
 void BtnP(Ram *ram);
