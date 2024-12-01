@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "../../include/sds.h"
 #include "code.h"
+#include "sprite.h"
 
 enum EditorMode {
 	EDITOR_MODE_CODEEDITOR,
@@ -19,6 +20,7 @@ typedef struct Editor {
 	enum EditorMode mode;
 
 	CodeEditor *code;
+	SpriteEditor *sprite;
 
 } Editor;
 

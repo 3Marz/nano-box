@@ -4,6 +4,7 @@
 #include "../ram.h"
 #include "../utils.h"
 #include "code.h"
+#include "sprite.h"
 #include <raylib.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -35,9 +36,10 @@ void editor_new(Editor* e, Console *c) {
 	ram_init(&e->ram);
 
 	e->code = code_init();
+	e->sprite = sprite_editor_init();
 	int sprlen = sizeof(editorSprites) / sizeof(int);
 	//Load sprites
-	for (int i = 0x326A; i < 0x326A+sprlen; i++) {
+	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+sprlen; i++) {
 		Poke(&e->ram, i, editorSprites[i - 0x326A]);
 	}
 
@@ -131,50 +133,19 @@ void code_editor_run(Editor *e) {
 	draw_code(e);
 }
 
-int sc = 12;
-int num = 180;
-void sprite_editor_run(Editor *e) {
-	RectF(&e->ram, 192/2, 0, 192/2, 128, 15);
-	int xoff = 0;
-	int yoff = 8;
-
-	if (IsKeyPressed(KEY_DOWN))
-		sc--;
-	if (IsKeyPressed(KEY_UP))
-		sc++;
-	if (IsKeyPressed(KEY_RIGHT))
-		num++;
-	if (IsKeyPressed(KEY_LEFT))
-		num--;
-
-	char s[50];
-	sprintf(s, "Nums %i,\nScale %i", num, sc);
-
-	Text(&e->ram, 120, 12, s, 2);
-
-	for (int i = 0; i < num; i++) {
-		Rect(&e->ram, xoff, yoff, 8, 8, 2);
-		xoff += 8;
-		if (xoff >= 8*sc) {
-			xoff = 0;
-			yoff += 8;
-		}
-	}
-}
-
 void editor_run(Editor *e) {
 	Cls(&e->ram, SYNTAX_BACKGROUND);
 
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
 	} else if (e->mode == EDITOR_MODE_SPRITEEDITOR) {
-		sprite_editor_run(e);
+		sprite_editor_run(e->sprite, &e->ram);
 	}
 
 	// Topbar
 	RectF(&e->ram, 0, 0, 192, 8, 14);
-	Spr(&e->ram, 0, 192-8, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1);
-	Spr(&e->ram, 1, 192-16, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1);
+	Spr(&e->ram, 0, 192-8, 0, e->mode==EDITOR_MODE_CODEEDITOR ? 0 : 15, 1, 1, 1);
+	Spr(&e->ram, 1, 192-16, 0, e->mode==EDITOR_MODE_SPRITEEDITOR ? 0 : 15, 1, 1, 1);
 
 	// Handle mouse & button
 	Mouse(&e->ram);
@@ -193,4 +164,5 @@ void editor_run(Editor *e) {
 void editor_close(Editor *e) {
 	printf("Closing editor with acc %d lines\n", e->code->len);
 	code_close(e->code);
+	sprite_editor_close(e->sprite);
 }
