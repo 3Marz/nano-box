@@ -9,7 +9,7 @@
 SpriteEditor *sprite_editor_init() {
 	SpriteEditor *e = malloc(sizeof(SpriteEditor));
 	e->selected = 0;
-	e->zoom = 1;
+	e->zoom = 4;
 	return e;
 }
 
@@ -17,7 +17,8 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 	RectF(ram, 192/2, 0, 192/2, 128, 15);
 	// Right Side
 	Rectangle canvas = {104, 16, 8*8, 8*8};
-	RectF(ram, canvas.x, canvas.y, canvas.width, canvas.height, 0);
+	Rect(ram, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
+	Spr(ram, e->selected, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
 
 	// Left Side
 	int xoff = 0;
@@ -29,7 +30,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 	int mbtn = Peek(ram, RAM_MOUSE_START+2);
 
 
-	if (mx < 192/2 && mbtn == 1) {
+	if (mx < 192/2 && my >= 8 && mbtn == 1) {
 		e->selected = ((mx/8) + (my/8)*12)-12; 
 	}
 
