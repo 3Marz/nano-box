@@ -4,7 +4,8 @@
 #include "../ram.h"
 
 typedef struct SpriteEditor {
-	int selected;
+	int selected_sptite;
+	int selected_color;
 	int zoom;
 } SpriteEditor;
 
