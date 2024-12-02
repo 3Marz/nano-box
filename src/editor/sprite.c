@@ -47,6 +47,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Rect(editorRam, selectedColorX-1, selectedColorY-1, 10, 10, 2);
 	Rect(editorRam, selectedColorX, selectedColorY, 8, 8, 0);
 
+	// Handling Drawing
 	if (pos_in_rect(canvas.x, canvas.y, canvas.width-1, canvas.height-1, mx, my) && mbtn == 1) {
 		int smx = (mx - canvas.x)/8;
 		int smy = (my - canvas.y)/8;
@@ -60,6 +61,15 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		}
 		Poke(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
 	}
+
+	// sprite and color indicators
+	char selectedSprStr[4];
+	char selectedColorStr[4];
+	sprintf(selectedSprStr, "#%d", e->selected_sptite);
+	sprintf(selectedColorStr, "#%d", e->selected_color);
+
+	Text(editorRam, 8*12+4, 9, selectedSprStr, 2);
+	Text(editorRam, 8*21+4, 9, selectedColorStr, 2);
 
 	// --------- Left Side ---------
 	int xoff = 0;
