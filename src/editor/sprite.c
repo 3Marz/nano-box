@@ -15,24 +15,24 @@ SpriteEditor *sprite_editor_init() {
 	return e;
 }
 
-void sprite_editor_run(SpriteEditor *e, Ram *ram) {
-	Mouse(ram);
-	int mx = Peek(ram, RAM_MOUSE_START);
-	int my = Peek(ram, RAM_MOUSE_START+1);
-	int mbtn = Peek(ram, RAM_MOUSE_START+2);
-	RectF(ram, 192/2, 0, 192/2, 128, 15);
+void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
+	Mouse(editorRam);
+	int mx = Peek(editorRam, RAM_MOUSE_START);
+	int my = Peek(editorRam, RAM_MOUSE_START+1);
+	int mbtn = Peek(editorRam, RAM_MOUSE_START+2);
+	RectF(editorRam, 192/2, 0, 192/2, 128, 15);
 
 	// --------- Right Side --------- 
 	Rectangle canvas = {100, 16, 8*8, 8*8};
-	Rect(ram, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
-	Spr(ram, ram, e->selected_sptite, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
+	Rect(editorRam, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
+	Spr(consoleRam, editorRam, e->selected_sptite, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
 
 	Rectangle colorRect = {8*22 - 4, 8*2, 8*2, 8*8};
-	Rect(ram, 8*22 - 5, 8*2 - 1, 8*2 + 2, 8*8 + 2, 0);
+	Rect(editorRam, 8*22 - 5, 8*2 - 1, 8*2 + 2, 8*8 + 2, 0);
 	int selectedColorX, selectedColorY;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 8; j++) {
-			RectF(ram, (8*22 - 4)+(i*8), (8*2)+(j*8), 8, 8, i+(j*2));
+			RectF(editorRam, (8*22 - 4)+(i*8), (8*2)+(j*8), 8, 8, i+(j*2));
 			if (e->selected_color == i+(j*2)) {
 				selectedColorX = (8*22 - 4)+(i*8);
 				selectedColorY = (8*2)+(j*8);
@@ -44,21 +44,21 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 		int cmy = (my - colorRect.y)/8;
 		e->selected_color = cmx+(cmy*2);
 	}
-	Rect(ram, selectedColorX-1, selectedColorY-1, 10, 10, 2);
-	Rect(ram, selectedColorX, selectedColorY, 8, 8, 0);
+	Rect(editorRam, selectedColorX-1, selectedColorY-1, 10, 10, 2);
+	Rect(editorRam, selectedColorX, selectedColorY, 8, 8, 0);
 
 	if (pos_in_rect(canvas.x, canvas.y, canvas.width-1, canvas.height-1, mx, my) && mbtn == 1) {
 		int smx = (mx - canvas.x)/8;
 		int smy = (my - canvas.y)/8;
 		int pixelPos = smx+(smy*8);
-		int pixelHex = Peek(ram, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2));
+		int pixelHex = Peek(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2));
 		int newPixel;
 		if (pixelPos % 2 == 0) { // --- Left Pixel
 			newPixel = (e->selected_color<<4) | (pixelHex&0x0f);
 		} else { // ------------------- Right Pixel
 			newPixel = (pixelHex&0xf0) | (e->selected_color);
 		}
-		Poke(ram, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
+		Poke(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
 	}
 
 	// --------- Left Side ---------
@@ -71,20 +71,20 @@ void sprite_editor_run(SpriteEditor *e, Ram *ram) {
 
 	int selectedSpriteX, selectedSpriteY;
 	for (int i = 0; i < 180; i++) {
-		Spr(ram, ram, i, xoff, yoff, 0, 1, 1, 1);
+		Spr(consoleRam, editorRam, i, xoff, yoff, 0, 1, 1, 1);
 
 		if (e->selected_sptite == i) {
 			selectedSpriteX = xoff;
 			selectedSpriteY = yoff;
 		}
-		/*Rect(ram, xoff, yoff, 8, 8, 2);*/
+		/*Rect(editorRam, xoff, yoff, 8, 8, 2);*/
 		xoff += 8;
 		if (xoff >= 8*12) {
 			xoff = 0;
 			yoff += 8;
 		}
 	}
-	Rect(ram, selectedSpriteX-1, selectedSpriteY-1, 10, 10, 2);
+	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, 10, 10, 2);
 }
 
 void sprite_editor_close(SpriteEditor *e) {

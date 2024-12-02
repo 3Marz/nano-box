@@ -10,7 +10,7 @@ typedef struct SpriteEditor {
 } SpriteEditor;
 
 SpriteEditor *sprite_editor_init();
-void sprite_editor_run(SpriteEditor *e, Ram *ram);
+void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam);
 void sprite_editor_close(SpriteEditor *e);
 
 #endif

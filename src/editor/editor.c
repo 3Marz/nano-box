@@ -139,7 +139,7 @@ void editor_run(Editor *e) {
 	if (e->mode == EDITOR_MODE_CODEEDITOR) {
 		code_editor_run(e);
 	} else if (e->mode == EDITOR_MODE_SPRITEEDITOR) {
-		sprite_editor_run(e->sprite, &e->ram);
+		sprite_editor_run(e->sprite, &e->ram, &e->console->ram);
 	}
 
 	// Topbar
