@@ -3,10 +3,18 @@
 
 #include "../ram.h"
 
+enum SpriteTools {
+	SPRITE_TOOL_PENCIL,
+	SPRITE_TOOL_FILL,
+	SPRITE_TOOL_SELECT,
+};
+
 typedef struct SpriteEditor {
 	int selected_sptite;
 	int selected_color;
 	int zoom;
+
+	enum SpriteTools selected_tool;
 } SpriteEditor;
 
 SpriteEditor *sprite_editor_init();

@@ -2,6 +2,7 @@
 #include "sprite.h"
 #include "../api.h"
 #include "../utils.h"
+#include "e_ui.h"
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +13,24 @@ SpriteEditor *sprite_editor_init() {
 	e->selected_sptite = 0;
 	e->selected_color = 0;
 	e->zoom = 4;
+
+	e->selected_tool = SPRITE_TOOL_PENCIL;
 	return e;
+}
+
+void tools_pencil(SpriteEditor *e, Rectangle canvas, int mx, int my, Ram *consoleRam) {
+	if (!IsMouseButtonDown(MOUSE_LEFT_BUTTON)) return;
+	int smx = (mx - canvas.x)/8;
+	int smy = (my - canvas.y)/8;
+	int pixelPos = smx+(smy*8);
+	int pixelHex = Peek(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2));
+	int newPixel;
+	if (pixelPos % 2 == 0) { // --- Left Pixel
+		newPixel = (e->selected_color<<4) | (pixelHex&0x0f);
+	} else { // ------------------- Right Pixel
+		newPixel = (pixelHex&0xf0) | (e->selected_color);
+	}
+	Poke(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
 }
 
 void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
@@ -47,29 +65,51 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Rect(editorRam, selectedColorX-1, selectedColorY-1, 10, 10, 2);
 	Rect(editorRam, selectedColorX, selectedColorY, 8, 8, 0);
 
-	// Handling Drawing
-	if (pos_in_rect(canvas.x, canvas.y, canvas.width-1, canvas.height-1, mx, my) && mbtn == 1) {
-		int smx = (mx - canvas.x)/8;
-		int smy = (my - canvas.y)/8;
-		int pixelPos = smx+(smy*8);
-		int pixelHex = Peek(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2));
-		int newPixel;
-		if (pixelPos % 2 == 0) { // --- Left Pixel
-			newPixel = (e->selected_color<<4) | (pixelHex&0x0f);
-		} else { // ------------------- Right Pixel
-			newPixel = (pixelHex&0xf0) | (e->selected_color);
+	// Handling Tools
+	if (pos_in_rect(canvas.x, canvas.y, canvas.width-1, canvas.height-1, mx, my)) {
+		switch (e->selected_tool) {
+			case SPRITE_TOOL_PENCIL:
+				tools_pencil(e, canvas, mx, my, consoleRam);
+				break;
+			case SPRITE_TOOL_FILL:
+				break;
+			case SPRITE_TOOL_SELECT:
+				break;
+			default:
+				break;
 		}
-		Poke(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
 	}
 
 	// sprite and color indicators
-	char selectedSprStr[4];
+	char selectedSprStr[5];
 	char selectedColorStr[4];
 	sprintf(selectedSprStr, "#%d", e->selected_sptite);
 	sprintf(selectedColorStr, "#%d", e->selected_color);
 
 	Text(editorRam, 8*12+4, 9, selectedSprStr, 2);
 	Text(editorRam, 8*21+4, 9, selectedColorStr, 2);
+
+	// flags TODO
+	for (int i = 0; i < 8; i++) {
+		Circ(editorRam, 104+(i*8), 8*11, 2, 0);
+	}
+
+	// Tools
+	Button tools[3] = {
+		{8*13-4, 8*12, 8, 8, SPRITE_TOOL_PENCIL, 2},
+		{8*14-2, 8*12, 8, 8, SPRITE_TOOL_FILL, 4},
+		{8*15, 8*12, 8, 8, SPRITE_TOOL_SELECT, 6},
+		/*{8*16, 8*12, 8, 8, 3},	*/
+	};
+	for (int i = 0; i < 3; i++) {
+		Spr(editorRam, editorRam, 
+				e->selected_tool == i ? tools[i].sprite+1 : tools[i].sprite, 
+				tools[i].x, tools[i].y, 0, 1, 1, 1);
+		if (button_is_pressed(tools[i], mx, my, mbtn)) {
+			e->selected_tool = tools[i].type;
+		}
+	}
+	
 
 	// --------- Left Side ---------
 	int xoff = 0;
@@ -95,6 +135,18 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		}
 	}
 	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, 10, 10, 2);
+
+	/*if (IsKeyPressed(KEY_Q)) {*/
+	/*	int drop = 0;*/
+	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*5); i++) {*/
+	/*		drop++;*/
+	/*		printf("0x%x, ", Peek(consoleRam, i));*/
+	/*		if (drop >= 8) {*/
+	/*			printf("\n");*/
+	/*			drop = 0;*/
+	/*		}*/
+	/*	}*/
+	/*}*/
 }
 
 void sprite_editor_close(SpriteEditor *e) {
