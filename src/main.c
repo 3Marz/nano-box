@@ -22,6 +22,7 @@ int main() {
     InitWindow(SCREEN_WIDTH*5, SCREEN_HEIGHT*5, "Nano-Box");
 	RenderTexture2D target = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 	
+	SetExitKey(KEY_NULL);
 	SetTargetFPS(60);
 
 	clock_t t = clock();
@@ -63,8 +64,8 @@ int main() {
 		if(IsKeyPressed(KEY_ESCAPE)) {
 			if(console.mode == CONSOLE_MODE_GAME)
 				console.mode = CONSOLE_MODE_EDITOR;
-			else
-				break;
+			/*else*/
+			/*	break;*/
 		}
 		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_R) && console.mode == CONSOLE_MODE_EDITOR) {
 			sds code_string = sdsjoin(editor.code->data, editor.code->len, "\n");
