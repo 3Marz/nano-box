@@ -170,18 +170,41 @@ void Text(Ram *ram, int x, int y, char *s, int c) {
 	}
 }
 
-void Spr(Ram *spriteRam, Ram *drawRam, int id, int x, int y, int colorkey, int w, int h, int scale) {
+void SprOne(Ram *spriteRam, Ram *drawRam, int id, int x, int y, int colorkey, int scale) {
 	int id_addr = RAM_SPRITES_START+(id*32);
-	for(int j = 0; j < h*8; j++) {
-		for (int i = 0; i < w*4; i++) {
+	for(int j = 0; j < 8; j++) {
+		for (int i = 0; i < 4; i++) {
 			int colors = Peek(spriteRam, id_addr+i+(j*4));
 			if((colors>>4) != colorkey) {
-				RectF(drawRam, x+((i*scale)*2), y+j+(j*(scale-1)), scale, scale, colors>>4);
+				RectF(drawRam, 
+						x+((i*scale)*2), 
+						y+j+(j*(scale-1)), 
+						scale, scale, 
+						colors>>4
+				);
 			}
 			if ((colors&0xf) != colorkey) {
-				RectF(drawRam, x+((i*scale)*2)+scale, y+j+(j*(scale-1)), scale, scale, colors&0xf);
+				RectF(drawRam, 
+						x+((i*scale)*2)+scale, 
+						y+j+(j*(scale-1)), 
+						scale, scale, 
+						colors&0xf
+				);
 			}
 		}
+	}
+}
+// Ugly
+void Spr(Ram *spriteRam, Ram *drawRam, int id, int x, int y, int colorkey, int w, int h, int scale) {
+	int nextId = id;
+	int mapY = floor(id/12.0f);
+	int mapX = id%12;
+	for (int j = mapY; j < mapY+h; j++) {
+		for (int i = 0; i < w; i++) {
+			SprOne(spriteRam, drawRam, nextId, x+(i*8), y+((j-mapY)*8), colorkey, scale);	
+			nextId++;
+		}
+		nextId = ((j+1)*12)+mapX;
 	}
 }
 

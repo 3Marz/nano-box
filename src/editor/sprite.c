@@ -119,9 +119,9 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		e->selected_sptite = ((mx/8) + (my/8)*12)-12; 
 	}
 
+	Spr(consoleRam, editorRam, 0, 0, 8, 0, 12, 12, 1);
 	int selectedSpriteX, selectedSpriteY;
 	for (int i = 0; i < 180; i++) {
-		Spr(consoleRam, editorRam, i, xoff, yoff, 0, 1, 1, 1);
 
 		if (e->selected_sptite == i) {
 			selectedSpriteX = xoff;

@@ -169,8 +169,8 @@ int spr(lua_State *L) {
 	int y = luaL_checknumber(L, 3);
 	int colorkey = luaL_optinteger(L, 4, 0);
 	int w = luaL_optinteger(L, 5, 1);
-	int h = luaL_optinteger(L, 5, 1);
-	int scale = luaL_optinteger(L, 6, 1);
+	int h = luaL_optinteger(L, 6, 1);
+	int scale = luaL_optinteger(L, 7, 1);
 	Spr(&console->ram, &console->ram, id, x, y, colorkey, w, h, scale);
 	return 0;
 }
