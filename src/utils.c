@@ -40,6 +40,9 @@ void insert_element(sds *arr, int index, int arr_len) {
 int pos_in_rect(int rx, int ry, int rw, int rh, int x, int y) {
 	return x >= rx && x <= rx+rw && y >= ry && y <= ry+rh;
 }
+int pos_in_rectex(Rectangle rect, int x, int y) {
+	return x >= rect.x && x <= rect.x+rect.width && y >= rect.y && y <= rect.y+rect.height;
+}
 
 int min(int a, int b) {
 	return a < b ? a : b;
