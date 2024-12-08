@@ -12,6 +12,8 @@ typedef struct {
 	int sprite;
 } Button;
 
-bool button_is_pressed(Button b, int mouseX, int mouseY, int mouseBtn);
+bool button_is_pressed(Button b, int mouseX, int mouseY);
+bool button_is_held(Button b, int mouseX, int mouseY);
+bool button_is_hovered(Button b, int mouseX, int mouseY);
 
 #endif
