@@ -201,7 +201,7 @@ void Spr(Ram *spriteRam, Ram *drawRam, int id, int x, int y, int colorkey, int w
 	int mapX = id%12;
 	for (int j = mapY; j < mapY+h; j++) {
 		for (int i = 0; i < w; i++) {
-			SprOne(spriteRam, drawRam, nextId, x+(i*8), y+((j-mapY)*8), colorkey, scale);	
+			SprOne(spriteRam, drawRam, nextId, x+(i*(scale*8)), y+((j-mapY)*(scale*8)), colorkey, scale);	
 			nextId++;
 		}
 		nextId = ((j+1)*12)+mapX;
