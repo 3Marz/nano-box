@@ -7,30 +7,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int zoomLookup[4]    = {8, 4, 2, 1};
+int zoomLookupRev[4] = {1, 2, 4, 8};
 
 SpriteEditor *sprite_editor_init() {
 	SpriteEditor *e = malloc(sizeof(SpriteEditor));
 	e->selected_sptite = 0;
 	e->selected_color = 0;
-	e->zoom = 4;
+	e->zoom = 0;
 
 	e->selected_tool = SPRITE_TOOL_PENCIL;
 	return e;
 }
 
+// Maddness
 void tools_pencil(SpriteEditor *e, Rectangle canvas, int mx, int my, Ram *consoleRam) {
 	if (!IsMouseButtonDown(MOUSE_LEFT_BUTTON)) return;
-	int smx = (mx - canvas.x)/8;
-	int smy = (my - canvas.y)/8;
+	// get the mouse position relative to the canvas in a grid
+	int smx = (int)((mx - canvas.x)/zoomLookup[e->zoom])%8;
+	int smy = (int)((my - canvas.y)/zoomLookup[e->zoom])%8;
 	int pixelPos = smx+(smy*8);
-	int pixelHex = Peek(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2));
+
+	// get the hovered sprite id
+	int hoveredSprX = (mx-canvas.x)/(zoomLookup[e->zoom]*8);
+	int hoveredSprY = (my-canvas.y)/(zoomLookup[e->zoom]*8);
+	int hoveredId = hoveredSprX + (hoveredSprY*12);
+	int sprId = e->selected_sptite+hoveredId;
+
+	// set the pixel
+	int pixelHex = Peek(consoleRam, RAM_SPRITES_START+(sprId*32)+(pixelPos/2));
 	int newPixel;
 	if (pixelPos % 2 == 0) { // --- Left Pixel
 		newPixel = (e->selected_color<<4) | (pixelHex&0x0f);
 	} else { // ------------------- Right Pixel
 		newPixel = (pixelHex&0xf0) | (e->selected_color);
 	}
-	Poke(consoleRam, RAM_SPRITES_START+(e->selected_sptite*32)+(pixelPos/2), newPixel);
+	Poke(consoleRam, RAM_SPRITES_START+(sprId*32)+(pixelPos/2), newPixel);
+}
+
+void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
+	Button zoom1 = {8*22+4, 8*11+4, 8, 8};
+	Button zoom2 = {8*22+4, 8*12+4, 8, 8};
+	Button zoom3 = {8*22+4, 8*13+4, 8, 8};
+	Button zoom4 = {8*22+4, 8*14+4, 8, 8};
+	if (button_is_held(zoom1, mx, my)) e->zoom = 0;
+	if (button_is_held(zoom2, mx, my)) e->zoom = 1;
+	if (button_is_held(zoom3, mx, my)) e->zoom = 2;
+	if (button_is_held(zoom4, mx, my)) e->zoom = 3;
+	RectF(editorRam, 8*23-1, 8*11+3, 2, 8*4+2, 0);
+	RectF(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 2);
+	Rect(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 0);
 }
 
 void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
@@ -43,7 +69,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	// --------- Right Side --------- 
 	Rectangle canvas = {100, 16, 8*8, 8*8};
 	Rect(editorRam, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
-	Spr(consoleRam, editorRam, e->selected_sptite, canvas.x, canvas.y, -1, 1, 1, e->zoom*2);
+	Spr(consoleRam, editorRam, e->selected_sptite, canvas.x, canvas.y, -1, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom], zoomLookup[e->zoom]);
 
 	Rectangle colorRect = {8*22 - 4, 8*2, 8*2, 8*8};
 	Rect(editorRam, 8*22 - 5, 8*2 - 1, 8*2 + 2, 8*8 + 2, 0);
@@ -105,17 +131,21 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		Spr(editorRam, editorRam, 
 				e->selected_tool == i ? tools[i].sprite+1 : tools[i].sprite, 
 				tools[i].x, tools[i].y, 0, 1, 1, 1);
-		if (button_is_pressed(tools[i], mx, my, mbtn)) {
+		if (button_is_pressed(tools[i], mx, my)) {
 			e->selected_tool = tools[i].type;
 		}
 	}
-	
+
+	// Zoom Slider
+	ui_zoom_slider(e, editorRam, mx, my);
 
 	// --------- Left Side ---------
 	int xoff = 0;
 	int yoff = 8;
 
-	if (mx < 192/2 && my >= 8 && mbtn == 1) {
+	// TODO -- better way to do this shit
+	Rectangle selecting_rect = {0, 8, 8*12-1-(zoomLookupRev[e->zoom]*8-8), 8*15-1-(zoomLookupRev[e->zoom]*8-8)};
+	if (pos_in_rectex(selecting_rect, mx, my) && mbtn == 1) {
 		e->selected_sptite = ((mx/8) + (my/8)*12)-12; 
 	}
 
@@ -134,7 +164,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 			yoff += 8;
 		}
 	}
-	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, 10, 10, 2);
+	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, zoomLookupRev[e->zoom]*8+2, zoomLookupRev[e->zoom]*8+2, 2);
 
 	/*if (IsKeyPressed(KEY_Q)) {*/
 	/*	int drop = 0;*/
