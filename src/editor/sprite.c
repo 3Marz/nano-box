@@ -78,6 +78,7 @@ void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 	RectF(editorRam, 8*23-1, 8*11+3, 2, 8*4+2, 0);
 	RectF(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 2);
 	Rect(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 0);
+	Spr(editorRam, editorRam, 10, 8*22+4, 8*10+2, 0, 1, 1, 1);
 }
 
 void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
@@ -179,12 +180,18 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 
 	/*if (IsKeyPressed(KEY_Q)) {*/
 	/*	int drop = 0;*/
-	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*5); i++) {*/
+	/*	int newS = 0;*/
+	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*16); i++) {*/
 	/*		drop++;*/
 	/*		printf("0x%x, ", Peek(consoleRam, i));*/
-	/*		if (drop >= 8) {*/
+	/*		if (drop >= 4) {*/
 	/*			printf("\n");*/
 	/*			drop = 0;*/
+	/*			newS++;*/
+	/*		}*/
+	/*		if (newS >= 8) {*/
+	/*			newS = 0;*/
+	/*			printf("\n");	*/
 	/*		}*/
 	/*	}*/
 	/*}*/
