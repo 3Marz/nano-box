@@ -13,10 +13,6 @@ int zoomLookupRev[4] = {1, 2, 4, 8};
 SpriteEditorLayout sprite_editor_layout_init() {
 	SpriteEditorLayout lo;
 	lo.zoomBoundingBox = button_init(8*22+4, 8*11+4, 8, 8*4, 0, 0);
-	lo.zoom1 = button_init(8*22+4, 8*11+4, 8, 8, 0, 0);
-	lo.zoom2 = button_init(8*22+4, 8*12+4, 8, 8, 0, 0);
-	lo.zoom3 = button_init(8*22+4, 8*13+4, 8, 8, 0, 0);
-	lo.zoom4 = button_init(8*22+4, 8*14+4, 8, 8, 0, 0);
 
 	memcpy(&lo.tools, (Button[]){
 		button_init(8*13-4, 8*12, 8, 8, SPRITE_TOOL_PENCIL, 2),
@@ -70,10 +66,8 @@ void tools_pencil(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRa
 
 void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 	if (button_is_held(e->lo.zoomBoundingBox, mx, my)) {
-		if (button_is_hovered(e->lo.zoom1, mx, my)) e->zoom = 0;
-		if (button_is_hovered(e->lo.zoom2, mx, my)) e->zoom = 1;
-		if (button_is_hovered(e->lo.zoom3, mx, my)) e->zoom = 2;
-		if (button_is_hovered(e->lo.zoom4, mx, my)) e->zoom = 3;
+		int zmy = (my - e->lo.zoomBoundingBox.y-1)/8;
+		e->zoom = zmy;
 	}
 	RectF(editorRam, 8*23-1, 8*11+3, 2, 8*4+2, 0);
 	RectF(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 2);

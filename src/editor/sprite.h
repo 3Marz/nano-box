@@ -15,10 +15,6 @@ typedef struct SpriteEditorLayout {
 	Button tools[3];
 
 	Button zoomBoundingBox;
-	Button zoom1;
-	Button zoom2;
-	Button zoom3;
-	Button zoom4;
 
 	Button canvas;
 	Button colors;
