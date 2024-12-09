@@ -2,6 +2,7 @@
 #define SPRITE_H
 
 #include "../ram.h"
+#include "e_ui.h"
 
 enum SpriteTools {
 	SPRITE_TOOL_PENCIL,
@@ -9,10 +10,32 @@ enum SpriteTools {
 	SPRITE_TOOL_SELECT,
 };
 
+typedef struct SpriteEditorLayout {
+	// Right
+	Button tools[3];
+
+	Button zoomBoundingBox;
+	Button zoom1;
+	Button zoom2;
+	Button zoom3;
+	Button zoom4;
+
+	Button canvas;
+	Button colors;
+
+	// Left
+	Button sprites;
+
+} SpriteEditorLayout;
+
+SpriteEditorLayout sprite_editor_layout_init();
+
 typedef struct SpriteEditor {
 	int selected_sptite;
 	int selected_color;
 	int zoom;
+
+	SpriteEditorLayout lo;
 
 	enum SpriteTools selected_tool;
 } SpriteEditor;

@@ -1,14 +1,36 @@
 
 #include "sprite.h"
 #include "../api.h"
-#include "../utils.h"
 #include "e_ui.h"
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int zoomLookup[4]    = {8, 4, 2, 1};
 int zoomLookupRev[4] = {1, 2, 4, 8};
+
+SpriteEditorLayout sprite_editor_layout_init() {
+	SpriteEditorLayout lo;
+	lo.zoomBoundingBox = button_init(8*22+4, 8*11+4, 8, 8*4, 0, 0);
+	lo.zoom1 = button_init(8*22+4, 8*11+4, 8, 8, 0, 0);
+	lo.zoom2 = button_init(8*22+4, 8*12+4, 8, 8, 0, 0);
+	lo.zoom3 = button_init(8*22+4, 8*13+4, 8, 8, 0, 0);
+	lo.zoom4 = button_init(8*22+4, 8*14+4, 8, 8, 0, 0);
+
+	memcpy(&lo.tools, (Button[]){
+		button_init(8*13-4, 8*12, 8, 8, SPRITE_TOOL_PENCIL, 2),
+		button_init(8*14-2, 8*12, 8, 8, SPRITE_TOOL_FILL, 4),
+		button_init(8*15, 8*12, 8, 8, SPRITE_TOOL_SELECT, 6),
+	}, sizeof(Button)*3);
+
+	lo.canvas = button_init(100, 16, 8*8, 8*8, 0, 0);
+	lo.colors = button_init(8*22-4, 8*2, 8*2, 8*8, 0, 0); 
+
+	lo.sprites = button_init(0, 8, 8*12-1, 8*15-1, 0, 0);
+
+	return lo;
+}
 
 SpriteEditor *sprite_editor_init() {
 	SpriteEditor *e = malloc(sizeof(SpriteEditor));
@@ -16,13 +38,14 @@ SpriteEditor *sprite_editor_init() {
 	e->selected_color = 0;
 	e->zoom = 0;
 
+	e->lo = sprite_editor_layout_init();
+
 	e->selected_tool = SPRITE_TOOL_PENCIL;
 	return e;
 }
 
 // Maddness
-void tools_pencil(SpriteEditor *e, Rectangle canvas, int mx, int my, Ram *consoleRam) {
-	if (!IsMouseButtonDown(MOUSE_LEFT_BUTTON)) return;
+void tools_pencil(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRam) {
 	// get the mouse position relative to the canvas in a grid
 	int smx = (int)((mx - canvas.x)/zoomLookup[e->zoom])%8;
 	int smy = (int)((my - canvas.y)/zoomLookup[e->zoom])%8;
@@ -46,14 +69,12 @@ void tools_pencil(SpriteEditor *e, Rectangle canvas, int mx, int my, Ram *consol
 }
 
 void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
-	Button zoom1 = {8*22+4, 8*11+4, 8, 8};
-	Button zoom2 = {8*22+4, 8*12+4, 8, 8};
-	Button zoom3 = {8*22+4, 8*13+4, 8, 8};
-	Button zoom4 = {8*22+4, 8*14+4, 8, 8};
-	if (button_is_held(zoom1, mx, my)) e->zoom = 0;
-	if (button_is_held(zoom2, mx, my)) e->zoom = 1;
-	if (button_is_held(zoom3, mx, my)) e->zoom = 2;
-	if (button_is_held(zoom4, mx, my)) e->zoom = 3;
+	if (button_is_held(e->lo.zoomBoundingBox, mx, my)) {
+		if (button_is_hovered(e->lo.zoom1, mx, my)) e->zoom = 0;
+		if (button_is_hovered(e->lo.zoom2, mx, my)) e->zoom = 1;
+		if (button_is_hovered(e->lo.zoom3, mx, my)) e->zoom = 2;
+		if (button_is_hovered(e->lo.zoom4, mx, my)) e->zoom = 3;
+	}
 	RectF(editorRam, 8*23-1, 8*11+3, 2, 8*4+2, 0);
 	RectF(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 2);
 	Rect(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 0);
@@ -67,11 +88,9 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	RectF(editorRam, 192/2, 0, 192/2, 128, 15);
 
 	// --------- Right Side --------- 
-	Rectangle canvas = {100, 16, 8*8, 8*8};
-	Rect(editorRam, canvas.x-1, canvas.y-1, canvas.width+2, canvas.height+2, 0);
-	Spr(consoleRam, editorRam, e->selected_sptite, canvas.x, canvas.y, -1, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom], zoomLookup[e->zoom]);
+	Rect(editorRam, e->lo.canvas.x-1, e->lo.canvas.y-1, e->lo.canvas.w+2, e->lo.canvas.h+2, 0);
+	Spr(consoleRam, editorRam, e->selected_sptite, e->lo.canvas.x, e->lo.canvas.y, -1, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom], zoomLookup[e->zoom]);
 
-	Rectangle colorRect = {8*22 - 4, 8*2, 8*2, 8*8};
 	Rect(editorRam, 8*22 - 5, 8*2 - 1, 8*2 + 2, 8*8 + 2, 0);
 	int selectedColorX, selectedColorY;
 	for (int i = 0; i < 2; i++) {
@@ -83,19 +102,19 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 			}
 		}
 	}
-	if (pos_in_rect(colorRect.x, colorRect.y, colorRect.width-1, colorRect.height-1, mx, my) && mbtn == 1) {
-		int cmx = (mx - colorRect.x)/8;
-		int cmy = (my - colorRect.y)/8;
+	if (button_is_held(e->lo.colors, mx, my)) {
+		int cmx = (mx - e->lo.colors.x)/8;
+		int cmy = (my - e->lo.colors.y)/8;
 		e->selected_color = cmx+(cmy*2);
 	}
 	Rect(editorRam, selectedColorX-1, selectedColorY-1, 10, 10, 2);
 	Rect(editorRam, selectedColorX, selectedColorY, 8, 8, 0);
 
 	// Handling Tools
-	if (pos_in_rect(canvas.x, canvas.y, canvas.width-1, canvas.height-1, mx, my)) {
+	if (button_is_held(e->lo.canvas, mx, my)) {
 		switch (e->selected_tool) {
 			case SPRITE_TOOL_PENCIL:
-				tools_pencil(e, canvas, mx, my, consoleRam);
+				tools_pencil(e, e->lo.canvas, mx, my, consoleRam);
 				break;
 			case SPRITE_TOOL_FILL:
 				break;
@@ -121,18 +140,12 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	}
 
 	// Tools
-	Button tools[3] = {
-		{8*13-4, 8*12, 8, 8, SPRITE_TOOL_PENCIL, 2},
-		{8*14-2, 8*12, 8, 8, SPRITE_TOOL_FILL, 4},
-		{8*15, 8*12, 8, 8, SPRITE_TOOL_SELECT, 6},
-		/*{8*16, 8*12, 8, 8, 3},	*/
-	};
 	for (int i = 0; i < 3; i++) {
 		Spr(editorRam, editorRam, 
-				e->selected_tool == i ? tools[i].sprite+1 : tools[i].sprite, 
-				tools[i].x, tools[i].y, 0, 1, 1, 1);
-		if (button_is_pressed(tools[i], mx, my)) {
-			e->selected_tool = tools[i].type;
+				e->selected_tool == i ? e->lo.tools[i].sprite+1 : e->lo.tools[i].sprite, 
+				e->lo.tools[i].x, e->lo.tools[i].y, 0, 1, 1, 1);
+		if (button_is_pressed(e->lo.tools[i], mx, my)) {
+			e->selected_tool = e->lo.tools[i].type;
 		}
 	}
 
@@ -143,9 +156,8 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	int xoff = 0;
 	int yoff = 8;
 
-	// TODO -- better way to do this shit
-	Rectangle selecting_rect = {0, 8, 8*12-1-(zoomLookupRev[e->zoom]*8-8), 8*15-1-(zoomLookupRev[e->zoom]*8-8)};
-	if (pos_in_rectex(selecting_rect, mx, my) && mbtn == 1) {
+	// TODO -- Stop the cursor from going out of bounds
+	if (button_is_held(e->lo.sprites, mx, my)) {
 		e->selected_sptite = ((mx/8) + (my/8)*12)-12; 
 	}
 
@@ -157,7 +169,6 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 			selectedSpriteX = xoff;
 			selectedSpriteY = yoff;
 		}
-		/*Rect(editorRam, xoff, yoff, 8, 8, 2);*/
 		xoff += 8;
 		if (xoff >= 8*12) {
 			xoff = 0;
@@ -177,6 +188,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	/*		}*/
 	/*	}*/
 	/*}*/
+	ui_ctx_update();
 }
 
 void sprite_editor_close(SpriteEditor *e) {
