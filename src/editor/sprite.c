@@ -25,6 +25,9 @@ SpriteEditorLayout sprite_editor_layout_init() {
 
 	lo.sprites = button_init(0, 8, 8*12-1, 8*15-1, 0, 0);
 
+	lo.spritesTab = button_init(1, 0, 7, 7, 0, 11);
+	lo.tilesTab = button_init(9, 0, 7, 7, 0, 13);
+
 	return lo;
 }
 
@@ -33,6 +36,8 @@ SpriteEditor *sprite_editor_init() {
 	e->selected_sptite = 0;
 	e->selected_color = 0;
 	e->zoom = 0;
+
+	e->tab = 0;
 
 	e->lo = sprite_editor_layout_init();
 
@@ -153,12 +158,12 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 
 	// TODO -- Stop the cursor from going out of bounds
 	if (button_is_held(e->lo.sprites, mx, my)) {
-		e->selected_sptite = ((mx/8) + (my/8)*12)-12; 
+		e->selected_sptite = (((mx/8) + (my/8)*12)-12)+(e->tab*180); 
 	}
 
-	Spr(consoleRam, editorRam, 0, 0, 8, 0, 12, 15, 1);
+	Spr(consoleRam, editorRam, e->tab*180, 0, 8, 0, 12, 15, 1);
 	int selectedSpriteX, selectedSpriteY;
-	for (int i = 0; i < 180; i++) {
+	for (int i = e->tab*180; i < 180+(e->tab*180); i++) {
 
 		if (e->selected_sptite == i) {
 			selectedSpriteX = xoff;
@@ -173,23 +178,26 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, zoomLookupRev[e->zoom]*8+2, zoomLookupRev[e->zoom]*8+2, 2);
 
 	/*if (IsKeyPressed(KEY_Q)) {*/
-	/*	int drop = 0;*/
-	/*	int newS = 0;*/
 	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*16); i++) {*/
-	/*		drop++;*/
 	/*		printf("0x%x, ", Peek(consoleRam, i));*/
-	/*		if (drop >= 4) {*/
-	/*			printf("\n");*/
-	/*			drop = 0;*/
-	/*			newS++;*/
-	/*		}*/
-	/*		if (newS >= 8) {*/
-	/*			newS = 0;*/
-	/*			printf("\n");	*/
-	/*		}*/
 	/*	}*/
 	/*}*/
 	ui_ctx_update();
+}
+
+void sprite_editor_toolbar(SpriteEditor *e, Ram *editorRam, int mx, int my) {
+	Spr(editorRam, editorRam, e->tab == 0 ? e->lo.spritesTab.sprite+1 : e->lo.spritesTab.sprite, 
+			e->lo.spritesTab.x,e->lo.spritesTab.y, 0, 1,1 ,1);
+	Spr(editorRam, editorRam, e->tab == 1 ? e->lo.tilesTab.sprite+1 : e->lo.tilesTab.sprite, 
+			e->lo.tilesTab.x,e->lo.tilesTab.y, 0, 1,1 ,1);
+	if (button_is_pressed(e->lo.spritesTab, mx, my)) {
+		e->tab = 0;
+		if (e->selected_sptite >= 180) e->selected_sptite -= 180;
+	}
+	if (button_is_pressed(e->lo.tilesTab, mx, my)) {
+		e->tab = 1;
+		if (e->selected_sptite < 180) e->selected_sptite += 180;
+	}
 }
 
 void sprite_editor_close(SpriteEditor *e) {

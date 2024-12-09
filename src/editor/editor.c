@@ -137,6 +137,11 @@ void editor_run(Editor *e) {
 	int mx = Peek(&e->ram, RAM_MOUSE_START);
 	int my = Peek(&e->ram, RAM_MOUSE_START+1);
 	int mbtn = Peek(&e->ram, RAM_MOUSE_START+2);
+	
+	/*if (e->mode == EDITOR_MODE_CODEEDITOR)*/
+	/**/
+	if (e->mode == EDITOR_MODE_SPRITEEDITOR)
+		sprite_editor_toolbar(e->sprite, &e->ram, mx, my);
 
 	if (pos_in_rect(192-8, 0, 8, 8, mx, my) && mbtn == 1) {
 		e->mode = EDITOR_MODE_CODEEDITOR;
