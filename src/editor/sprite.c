@@ -20,8 +20,8 @@ SpriteEditorLayout sprite_editor_layout_init() {
 		button_init(8*15, 8*12, 8, 8, SPRITE_TOOL_SELECT, 6),
 	}, sizeof(Button)*3);
 
-	lo.canvas = button_init(100, 16, 8*8, 8*8, 0, 0);
-	lo.colors = button_init(8*22-4, 8*2, 8*2, 8*8, 0, 0); 
+	lo.canvas = button_init(100, 16, 8*8-1, 8*8-1, 0, 0);
+	lo.colors = button_init(8*22-4, 8*2, 8*2-1, 8*8-1, 0, 0); 
 
 	lo.sprites = button_init(0, 8, 8*12-1, 8*15-1, 0, 0);
 
@@ -83,10 +83,10 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	RectF(editorRam, 192/2, 0, 192/2, 128, 15);
 
 	// --------- Right Side --------- 
-	Rect(editorRam, e->lo.canvas.x-1, e->lo.canvas.y-1, e->lo.canvas.w+2, e->lo.canvas.h+2, 0);
+	Rect(editorRam, e->lo.canvas.x-1, e->lo.canvas.y-1, e->lo.canvas.w+3, e->lo.canvas.h+3, 0);
 	Spr(consoleRam, editorRam, e->selected_sptite, e->lo.canvas.x, e->lo.canvas.y, -1, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom], zoomLookup[e->zoom]);
 
-	Rect(editorRam, 8*22 - 5, 8*2 - 1, 8*2 + 2, 8*8 + 2, 0);
+	Rect(editorRam, e->lo.colors.x-1, e->lo.colors.y-1, e->lo.colors.w+3, e->lo.colors.h+3, 0);
 	int selectedColorX, selectedColorY;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 8; j++) {
