@@ -3,6 +3,7 @@
 
 #include "../ram.h"
 #include "e_ui.h"
+#include <raylib.h>
 
 enum SpriteTools {
 	SPRITE_TOOL_PENCIL,
@@ -32,6 +33,7 @@ SpriteEditorLayout sprite_editor_layout_init();
 
 typedef struct SpriteEditor {
 	int selected_sptite;
+	Rectangle sprite_selection;
 	int selected_color;
 	int zoom;
 

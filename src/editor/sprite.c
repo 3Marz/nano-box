@@ -3,6 +3,7 @@
 #include "../api.h"
 #include "e_ui.h"
 #include <raylib.h>
+#include <raymath.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +35,7 @@ SpriteEditorLayout sprite_editor_layout_init() {
 SpriteEditor *sprite_editor_init() {
 	SpriteEditor *e = malloc(sizeof(SpriteEditor));
 	e->selected_sptite = 0;
+	e->sprite_selection = (Rectangle){0, 8, 8, 8};
 	e->selected_color = 0;
 	e->zoom = 0;
 
@@ -73,6 +75,15 @@ void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 	if (button_is_held(e->lo.zoomBoundingBox, mx, my)) {
 		int zmy = (my - e->lo.zoomBoundingBox.y-1)/8;
 		e->zoom = zmy;
+
+		e->sprite_selection.width = 8*zoomLookupRev[e->zoom];
+		e->sprite_selection.height = 8*zoomLookupRev[e->zoom];
+
+		if (e->sprite_selection.x+e->sprite_selection.width > 8*12)
+			e->sprite_selection.x = 8*12 - e->sprite_selection.width;
+		if (e->sprite_selection.y+e->sprite_selection.height > 8*16)
+			e->sprite_selection.y = 8*16 - e->sprite_selection.height;
+		e->selected_sptite = ((e->sprite_selection.x/8 + (e->sprite_selection.y/8)*12)-12)+(e->tab*180);
 	}
 	RectF(editorRam, 8*23-1, 8*11+3, 2, 8*4+2, 0);
 	RectF(editorRam, 8*22+5, (8*11+6)+(e->zoom*8), 6, 4, 2);
@@ -158,24 +169,32 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 
 	// TODO -- Stop the cursor from going out of bounds
 	if (button_is_held(e->lo.sprites, mx, my)) {
-		e->selected_sptite = (((mx/8) + (my/8)*12)-12)+(e->tab*180); 
+		// Calculate the x and y
+		e->sprite_selection.x = (int)(mx/8)*8; 
+		e->sprite_selection.y = (int)(my/8)*8;
+		// Clamp the x and y
+		e->sprite_selection.x = Clamp(e->sprite_selection.x, 0, 8*12 - e->sprite_selection.width); 
+		e->sprite_selection.y = Clamp(e->sprite_selection.y, 0, 8*16 - e->sprite_selection.height); 
+
+		e->selected_sptite = ((e->sprite_selection.x/8 + (e->sprite_selection.y/8)*12)-12)+(e->tab*180);
 	}
 
 	Spr(consoleRam, editorRam, e->tab*180, 0, 8, 0, 12, 15, 1);
-	int selectedSpriteX, selectedSpriteY;
-	for (int i = e->tab*180; i < 180+(e->tab*180); i++) {
-
-		if (e->selected_sptite == i) {
-			selectedSpriteX = xoff;
-			selectedSpriteY = yoff;
-		}
-		xoff += 8;
-		if (xoff >= 8*12) {
-			xoff = 0;
-			yoff += 8;
-		}
-	}
-	Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, zoomLookupRev[e->zoom]*8+2, zoomLookupRev[e->zoom]*8+2, 2);
+	Rect(editorRam, e->sprite_selection.x-1, e->sprite_selection.y-1, e->sprite_selection.width+2, e->sprite_selection.height+2, 2);
+	/*int selectedSpriteX, selectedSpriteY;*/
+	/*for (int i = e->tab*180; i < 180+(e->tab*180); i++) {*/
+	/**/
+	/*	if (e->selected_sptite == i) {*/
+	/*		selectedSpriteX = xoff;*/
+	/*		selectedSpriteY = yoff;*/
+	/*	}*/
+	/*	xoff += 8;*/
+	/*	if (xoff >= 8*12) {*/
+	/*		xoff = 0;*/
+	/*		yoff += 8;*/
+	/*	}*/
+	/*}*/
+	/*Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, zoomLookupRev[e->zoom]*8+2, zoomLookupRev[e->zoom]*8+2, 2);*/
 
 	/*if (IsKeyPressed(KEY_Q)) {*/
 	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*16); i++) {*/
