@@ -118,7 +118,6 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Mouse(editorRam);
 	int mx = Peek(editorRam, RAM_MOUSE_START);
 	int my = Peek(editorRam, RAM_MOUSE_START+1);
-	int mbtn = Peek(editorRam, RAM_MOUSE_START+2);
 	RectF(editorRam, 192/2, 0, 192/2, 128, 15);
 
 	// --------- Right Side --------- 
@@ -191,7 +190,6 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	int xoff = 0;
 	int yoff = 8;
 
-	// TODO -- Stop the cursor from going out of bounds
 	if (button_is_held(e->lo.sprites, mx, my)) {
 		// Calculate the x and y
 		e->sprite_selection.x = (int)(mx/8)*8; 
@@ -205,26 +203,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 
 	Spr(consoleRam, editorRam, e->tab*180, 0, 8, 0, 12, 15, 1);
 	Rect(editorRam, e->sprite_selection.x-1, e->sprite_selection.y-1, e->sprite_selection.width+2, e->sprite_selection.height+2, 2);
-	/*int selectedSpriteX, selectedSpriteY;*/
-	/*for (int i = e->tab*180; i < 180+(e->tab*180); i++) {*/
-	/**/
-	/*	if (e->selected_sptite == i) {*/
-	/*		selectedSpriteX = xoff;*/
-	/*		selectedSpriteY = yoff;*/
-	/*	}*/
-	/*	xoff += 8;*/
-	/*	if (xoff >= 8*12) {*/
-	/*		xoff = 0;*/
-	/*		yoff += 8;*/
-	/*	}*/
-	/*}*/
-	/*Rect(editorRam, selectedSpriteX-1, selectedSpriteY-1, zoomLookupRev[e->zoom]*8+2, zoomLookupRev[e->zoom]*8+2, 2);*/
 
-	/*if (IsKeyPressed(KEY_Q)) {*/
-	/*	for (int i = RAM_SPRITES_START; i < RAM_SPRITES_START+(32*16); i++) {*/
-	/*		printf("0x%x, ", Peek(consoleRam, i));*/
-	/*	}*/
-	/*}*/
 	ui_ctx_update();
 }
 
