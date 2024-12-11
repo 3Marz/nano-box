@@ -71,6 +71,13 @@ void tools_pencil(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRa
 	Poke(consoleRam, RAM_SPRITES_START+(sprId*32)+(pixelPos/2), newPixel);
 }
 
+void tools_eyedropper(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRam) {
+	int smx = (int)((mx - canvas.x)/zoomLookup[e->zoom]);
+	int smy = (int)((my - canvas.y)/zoomLookup[e->zoom]);
+
+	e->selected_color = SprGetPx(consoleRam, e->selected_sptite, smx, smy, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom]);
+};
+
 void flood_fill(Ram *spriteRam, SpriteEditor *e, int baseCol, int targetCol, int x, int y) {
 	int onPix = SprGetPx(spriteRam, e->selected_sptite, x, y, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom]);
 	if (onPix == baseCol) {
@@ -148,6 +155,8 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		case SPRITE_TOOL_PENCIL:
 			if (button_is_held(e->lo.canvas, mx, my, MOUSE_BUTTON_LEFT))
 				tools_pencil(e, e->lo.canvas, mx, my, consoleRam);
+			else if (button_is_held(e->lo.canvas, mx, my, MOUSE_BUTTON_RIGHT))
+				tools_eyedropper(e, e->lo.canvas, mx, my, consoleRam);
 			break;
 		case SPRITE_TOOL_FILL:
 			if (button_is_pressed(e->lo.canvas, mx, my, MOUSE_BUTTON_LEFT))
