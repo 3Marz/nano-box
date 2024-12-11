@@ -68,6 +68,9 @@ int main() {
 			/*	break;*/
 		}
 		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_R) && console.mode == CONSOLE_MODE_EDITOR) {
+			for (int i = 0; i < RAM_PALETTE_START; i++) {
+				console.ram.data[i] = editor.ram.data[i]; // To add the illusion of not clearing the screen
+			}
 			sds code_string = sdsjoin(editor.code->data, editor.code->len, "\n");
 			console_load_string(&console, code_string);
 			console_run_global(&console);
