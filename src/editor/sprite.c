@@ -71,6 +71,29 @@ void tools_pencil(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRa
 	Poke(consoleRam, RAM_SPRITES_START+(sprId*32)+(pixelPos/2), newPixel);
 }
 
+void flood_fill(Ram *spriteRam, SpriteEditor *e, int baseCol, int targetCol, int x, int y) {
+	int onPix = SprGetPx(spriteRam, e->selected_sptite, x, y, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom]);
+	if (onPix == baseCol) {
+		SprSetPx(spriteRam, e->selected_sptite, x, y, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom], targetCol);
+		flood_fill(spriteRam, e, baseCol, targetCol, x-1, y);
+		flood_fill(spriteRam, e, baseCol, targetCol, x+1, y);
+		flood_fill(spriteRam, e, baseCol, targetCol, x, y-1);
+		flood_fill(spriteRam, e, baseCol, targetCol, x, y+1);
+	}
+}
+
+void tools_fill(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRam) {
+	// get the mouse position relative to the canvas in a grid
+	int smx = (int)((mx - canvas.x)/zoomLookup[e->zoom]);
+	int smy = (int)((my - canvas.y)/zoomLookup[e->zoom]);
+
+	int baseCol = SprGetPx(consoleRam, e->selected_sptite, smx, smy, zoomLookupRev[e->zoom], zoomLookupRev[e->zoom]);
+	if (baseCol == e->selected_color)
+		return;
+
+	flood_fill(consoleRam, e, baseCol, e->selected_color, smx, smy);
+}
+
 void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 	if (button_is_held(e->lo.zoomBoundingBox, mx, my)) {
 		int zmy = (my - e->lo.zoomBoundingBox.y-1)/8;
@@ -122,18 +145,19 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Rect(editorRam, selectedColorX, selectedColorY, 8, 8, 0);
 
 	// Handling Tools
-	if (button_is_held(e->lo.canvas, mx, my)) {
-		switch (e->selected_tool) {
-			case SPRITE_TOOL_PENCIL:
+	switch (e->selected_tool) {
+		case SPRITE_TOOL_PENCIL:
+			if (button_is_held(e->lo.canvas, mx, my))
 				tools_pencil(e, e->lo.canvas, mx, my, consoleRam);
-				break;
-			case SPRITE_TOOL_FILL:
-				break;
-			case SPRITE_TOOL_SELECT:
-				break;
-			default:
-				break;
-		}
+			break;
+		case SPRITE_TOOL_FILL:
+			if (button_is_pressed(e->lo.canvas, mx, my))
+				tools_fill(e, e->lo.canvas, mx, my, consoleRam);
+			break;
+		case SPRITE_TOOL_SELECT:
+			break;
+		default:
+			break;
 	}
 
 	// sprite and color indicators
