@@ -18,10 +18,10 @@ Button button_init(int x, int y, int w, int h, int type, int sprite) {
 	return b;
 }
 
-bool button_is_pressed(Button b, int mouseX, int mouseY) {
+bool button_is_pressed(Button b, int mouseX, int mouseY, int mouseBtn) {
 	if (ui_ctx.locked && ui_ctx.focused != b.id) return false;
 
-	if (pos_in_rect(b.x, b.y, b.w, b.h, mouseX, mouseY) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+	if (pos_in_rect(b.x, b.y, b.w, b.h, mouseX, mouseY) && IsMouseButtonPressed(mouseBtn)) {
 		ui_ctx.focused = b.id;
 		ui_ctx.locked = true;
 		return true;
@@ -30,10 +30,10 @@ bool button_is_pressed(Button b, int mouseX, int mouseY) {
 		return false;
 }
 
-bool button_is_held(Button b, int mouseX, int mouseY) {
+bool button_is_held(Button b, int mouseX, int mouseY, int mouseBtn) {
 	if (ui_ctx.locked && ui_ctx.focused != b.id) return false;
 
-	if (pos_in_rect(b.x, b.y, b.w, b.h, mouseX, mouseY) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+	if (pos_in_rect(b.x, b.y, b.w, b.h, mouseX, mouseY) && IsMouseButtonDown(mouseBtn)) {
 		ui_ctx.focused = b.id;
 		ui_ctx.locked = true;
 		return true;

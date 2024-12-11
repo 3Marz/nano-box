@@ -95,7 +95,7 @@ void tools_fill(SpriteEditor *e, Button canvas, int mx, int my, Ram *consoleRam)
 }
 
 void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
-	if (button_is_held(e->lo.zoomBoundingBox, mx, my)) {
+	if (button_is_held(e->lo.zoomBoundingBox, mx, my, MOUSE_BUTTON_LEFT)) {
 		int zmy = (my - e->lo.zoomBoundingBox.y-1)/8;
 		e->zoom = zmy;
 
@@ -135,7 +135,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 			}
 		}
 	}
-	if (button_is_held(e->lo.colors, mx, my)) {
+	if (button_is_held(e->lo.colors, mx, my, MOUSE_BUTTON_LEFT)) {
 		int cmx = (mx - e->lo.colors.x)/8;
 		int cmy = (my - e->lo.colors.y)/8;
 		e->selected_color = cmx+(cmy*2);
@@ -146,11 +146,11 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	// Handling Tools
 	switch (e->selected_tool) {
 		case SPRITE_TOOL_PENCIL:
-			if (button_is_held(e->lo.canvas, mx, my))
+			if (button_is_held(e->lo.canvas, mx, my, MOUSE_BUTTON_LEFT))
 				tools_pencil(e, e->lo.canvas, mx, my, consoleRam);
 			break;
 		case SPRITE_TOOL_FILL:
-			if (button_is_pressed(e->lo.canvas, mx, my))
+			if (button_is_pressed(e->lo.canvas, mx, my, MOUSE_BUTTON_LEFT))
 				tools_fill(e, e->lo.canvas, mx, my, consoleRam);
 			break;
 		case SPRITE_TOOL_SELECT:
@@ -178,7 +178,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 		Spr(editorRam, editorRam, 
 				e->selected_tool == i ? e->lo.tools[i].sprite+1 : e->lo.tools[i].sprite, 
 				e->lo.tools[i].x, e->lo.tools[i].y, 0, 1, 1, 1);
-		if (button_is_pressed(e->lo.tools[i], mx, my)) {
+		if (button_is_pressed(e->lo.tools[i], mx, my, MOUSE_BUTTON_LEFT)) {
 			e->selected_tool = e->lo.tools[i].type;
 		}
 	}
@@ -190,7 +190,7 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	int xoff = 0;
 	int yoff = 8;
 
-	if (button_is_held(e->lo.sprites, mx, my)) {
+	if (button_is_held(e->lo.sprites, mx, my, MOUSE_BUTTON_LEFT)) {
 		// Calculate the x and y
 		e->sprite_selection.x = (int)(mx/8)*8; 
 		e->sprite_selection.y = (int)(my/8)*8;
@@ -212,11 +212,11 @@ void sprite_editor_toolbar(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 			e->lo.spritesTab.x,e->lo.spritesTab.y, 0, 1,1 ,1);
 	Spr(editorRam, editorRam, e->tab == 1 ? e->lo.tilesTab.sprite+1 : e->lo.tilesTab.sprite, 
 			e->lo.tilesTab.x,e->lo.tilesTab.y, 0, 1,1 ,1);
-	if (button_is_pressed(e->lo.spritesTab, mx, my)) {
+	if (button_is_pressed(e->lo.spritesTab, mx, my, MOUSE_BUTTON_LEFT)) {
 		e->tab = 0;
 		if (e->selected_sptite >= 180) e->selected_sptite -= 180;
 	}
-	if (button_is_pressed(e->lo.tilesTab, mx, my)) {
+	if (button_is_pressed(e->lo.tilesTab, mx, my, MOUSE_BUTTON_LEFT)) {
 		e->tab = 1;
 		if (e->selected_sptite < 180) e->selected_sptite += 180;
 	}
