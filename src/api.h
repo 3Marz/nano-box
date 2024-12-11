@@ -19,4 +19,7 @@ void Mouse(Ram *ram);
 void BtnP(Ram *ram);
 void Btn(Ram *ram);
 
+int SprGetPx(Ram *ram, int id, int x, int y, int w, int h);
+void SprSetPx(Ram *ram, int id, int x, int y, int w, int h, int col);
+
 #endif

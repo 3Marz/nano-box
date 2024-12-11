@@ -264,3 +264,36 @@ void BtnP(Ram *ram) {
 	Poke(ram, RAM_BUTTONS_START, bin);
 }
 
+int SprGetPx(Ram *ram, int id, int x, int y, int w, int h) {
+	if (x < 0 || y < 0 || x >= w*8 || y >= h*8)
+		return -1;
+
+	int spr_offset = (x/8) + ((y/8) * (12));
+	int id_addr = RAM_SPRITES_START+((id+spr_offset)*32);
+
+	int pos = ((x%8)/2) + ((y%8)*4);
+
+	uint8_t colors = Peek(ram, id_addr+pos);
+	if(x % 2 == 0) {
+		return colors >> 4; // Left most 4 bits (left pix)
+	} else {
+		return colors & 0xF; // Right most 4 bits (right pix)
+	}
+}
+void SprSetPx(Ram *ram, int id, int x, int y, int w, int h, int col) {
+	if (x < 0 || y < 0 || x >= w*8 || y >= h*8)
+		return;
+	
+	int spr_offset = (x/8) + ((y/8) * (12));
+	int id_addr = RAM_SPRITES_START+((id+spr_offset)*32);
+
+	int pos = ((x%8)/2) + ((y%8)*4);
+
+	uint8_t colors = Peek(ram, id_addr+pos);
+	if(x % 2 == 0) {
+		Poke(ram, id_addr+pos, (col<<4) | (colors&0xF));
+	} else {
+		Poke(ram, id_addr+pos, (colors&0xF0) | col);
+	}
+}
+
