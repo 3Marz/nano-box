@@ -21,6 +21,17 @@ SpriteEditorLayout sprite_editor_layout_init() {
 		button_init(8*15, 8*12, 8, 8, SPRITE_TOOL_SELECT, 6),
 	}, sizeof(Button)*3);
 
+	memcpy(&lo.flagsBtns, (Button[]){
+		button_init(104+(0*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(1*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(2*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(3*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(4*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(5*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(6*8)-2, 8*11-2, 5, 5, 0, 0),
+		button_init(104+(7*8)-2, 8*11-2, 5, 5, 0, 0),
+	}, sizeof(Button)*8);
+
 	lo.canvas = button_init(100, 16, 8*8-1, 8*8-1, 0, 0);
 	lo.colors = button_init(8*22-4, 8*2, 8*2-1, 8*8-1, 0, 0); 
 
@@ -121,6 +132,19 @@ void ui_zoom_slider(SpriteEditor *e, Ram *editorRam, int mx, int my) {
 	Spr(editorRam, editorRam, 10, 8*22+4, 8*10+2, 0, 1, 1, 1);
 }
 
+void handle_flags(SpriteEditor *e, Ram *editorRam, Ram *consoleRam, int mx, int my) {
+	for (int i = 0; i < 8; i++) {
+		Circ(editorRam, 104+(i*8), 8*11, 2, 0);
+		if (FGet(consoleRam, e->selected_sptite, i)) {
+			RectF(editorRam, 104+(i*8)-1, 8*11-1, 3,3 , i+5);
+			PxSet(editorRam, 104+(i*8)-1, 8*11-1, 2);
+		}
+		if (button_is_pressed(e->lo.flagsBtns[i], mx, my, MOUSE_LEFT_BUTTON)) {
+			FSet(consoleRam, e->selected_sptite, i, !FGet(consoleRam, e->selected_sptite, i));
+		}
+	}
+}
+
 void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Mouse(editorRam);
 	int mx = Peek(editorRam, RAM_MOUSE_START);
@@ -177,11 +201,9 @@ void sprite_editor_run(SpriteEditor *e, Ram *editorRam, Ram *consoleRam) {
 	Text(editorRam, 8*12+4, 9, selectedSprStr, 2);
 	Text(editorRam, 8*21+4, 9, selectedColorStr, 2);
 
-	// flags TODO
-	for (int i = 0; i < 8; i++) {
-		Circ(editorRam, 104+(i*8), 8*11, 2, 0);
-	}
-
+	// flags
+	handle_flags(e, editorRam, consoleRam, mx, my);
+	
 	// Tools
 	for (int i = 0; i < 3; i++) {
 		Spr(editorRam, editorRam, 

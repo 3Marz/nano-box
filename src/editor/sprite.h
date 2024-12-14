@@ -14,6 +14,7 @@ enum SpriteTools {
 typedef struct SpriteEditorLayout {
 	// Right
 	Button tools[3];
+	Button flagsBtns[8];
 
 	Button zoomBoundingBox;
 
