@@ -12,6 +12,7 @@
 #define RAM_MOUSE_START    0x5F6A
 #define RAM_KEYBOARD_START 0x5F6D
 #define RAM_BUTTONS_START  0x5F6E
+#define RAM_FLAGS_START    0x5270
 
 typedef struct Ram {
 	uint8_t data[RAM_SIZE]; 

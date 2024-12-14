@@ -297,3 +297,18 @@ void SprSetPx(Ram *ram, int id, int x, int y, int w, int h, int col) {
 	}
 }
 
+bool FGet(Ram *ram, int id, int flag) {
+	int flags = Peek(ram, RAM_FLAGS_START+id);
+	return flags & (1 << (7-flag));
+}
+void FSet(Ram *ram, int id, int flag, bool value) {
+	int flags = Peek(ram, RAM_FLAGS_START+id);
+	if(value) {
+		flags |= (1 << (7-flag));
+	} else {
+		flags &= ~(1 << (7-flag));
+	}
+	Poke(ram, RAM_FLAGS_START+id, flags);
+}
+
+
